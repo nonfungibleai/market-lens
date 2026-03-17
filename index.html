@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MarketLens — AI 주식 뉴스 & 키워드 분석</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@500;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#070d1a;color:#dde6f0;font-family:'Noto Sans KR',sans-serif;min-height:100vh;padding-bottom:80px}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:#070d1a}::-webkit-scrollbar-thumb{background:#1a2d45;border-radius:3px}
+input,button{font-family:inherit}
+a{color:#00c8ff;text-decoration:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.fu{animation:fadeUp .5s ease forwards}
+
+/* 헤더 */
+#header{background:#0e1829;border-bottom:1px solid #1a2d45;padding:16px 20px;position:sticky;top:0;z-index:99}
+#header-inner{max-width:860px;margin:0 auto}
+.logo-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.logo-icon{width:32px;height:32px;background:linear-gradient(135deg,#00c8ff,#0070cc);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 0 16px rgba(0,200,255,.27);flex-shrink:0}
+.logo-title{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:14px;color:#fff;letter-spacing:2px}
+.logo-title span{color:#00c8ff}
+.logo-sub{color:#4a6080;font-size:9px;letter-spacing:1.5px}
+.search-row{display:flex;gap:8px}
+#url-input{flex:1;background:#121f33;border:1px solid #1a2d45;border-radius:8px;padding:9px 14px;color:#dde6f0;font-size:13px;outline:none}
+#url-input:focus{border-color:#00c8ff44}
+#analyze-btn{background:linear-gradient(135deg,#00c8ff,#0070cc);color:#000;border:none;border-radius:8px;padding:9px 18px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;transition:opacity .2s}
+#analyze-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* 메인 */
+#main{max-width:860px;margin:0 auto;padding:20px 20px 0}
+
+/* 카드 */
+.card{background:#121f33;border:1px solid #1a2d45;border-radius:14px;padding:20px;margin-bottom:14px}
+.card-gradient{background:linear-gradient(135deg,#121f33,#0d1f38)}
+.divider{height:1px;background:#1a2d45;margin:16px 0}
+
+/* 섹션 헤더 */
+.sec-head{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.sec-head .icon{font-size:18px}
+.sec-head .title{color:#00c8ff;font-weight:700;font-size:13px;letter-spacing:1.5px;text-transform:uppercase}
+
+/* 태그 */
+.tag{display:inline-block;border-radius:4px;padding:2px 10px;font-size:11px;font-weight:700}
+
+/* 탭 */
+.tabs{display:flex;gap:2px;border-bottom:1px solid #1a2d45;margin-bottom:16px}
+.tab-btn{background:none;border:none;padding:9px 16px;color:#4a6080;border-bottom:2px solid transparent;cursor:pointer;font-size:13px;font-weight:400;margin-bottom:-1px;transition:all .2s;font-family:inherit}
+.tab-btn.active{color:#00c8ff;border-bottom-color:#00c8ff;font-weight:700}
+
+/* 티커 헤더 */
+.ticker-header{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px}
+.ticker-left .ticker-row{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+.ticker-symbol{font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:700;color:#fff}
+.ticker-meta{color:#4a6080;font-size:11px}
+.price-right{text-align:right}
+.price-main{font-family:'IBM Plex Mono',monospace;font-size:32px;font-weight:700;color:#fff}
+.price-change{font-size:14px;font-weight:700}
+.price-after{color:#4a6080;font-size:11px;margin-top:2px}
+.price-prev{color:#4a6080;font-size:10px;margin-top:2px}
+
+/* 이미지 */
+.img-banner{border-radius:10px;overflow:hidden;margin-bottom:14px}
+.img-banner img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* 기사 요약 */
+.article-title{font-weight:700;font-size:15px;color:#fff;margin-bottom:10px;line-height:1.6}
+.article-body{color:#8fa8c8;font-size:13px;line-height:1.9}
+
+/* 기술 요약 박스 */
+.tech-summary-box{margin-top:16px;padding:14px;background:#0e1829;border-radius:8px;border-left:3px solid #00c8ff}
+.tech-summary-text{color:#8fa8c8;font-size:13px;line-height:1.8}
+
+/* Sentiment / Impact / Others - CSS remains the same from your original source */
+.sentiment-wrap{display:flex;align-items:flex-start;gap:24px;flex-wrap:wrap}
+.sentiment-gauge{text-align:center;flex-shrink:0}
+.sentiment-label{color:#4a6080;font-size:11px;margin-top:4px}
+.sentiment-detail{flex:1;min-width:200px}
+.sent-section-title{color:#4a6080;font-size:11px;margin-bottom:6px}
+.sent-bar-wrap{margin-bottom:8px}
+.sent-bar{display:flex;height:10px;border-radius:5px;overflow:hidden;margin-bottom:6px}
+.sent-bar-pos{background:#00e5a0}
+.sent-bar-neu{background:#ffd166}
+.sent-bar-neg{background:#ff4060}
+.sent-legend{display:flex;gap:12px;font-size:11px}
+.sent-legend .pos{color:#00e5a0}
+.sent-legend .neu{color:#ffd166}
+.sent-legend .neg{color:#ff4060}
+.sent-comment{color:#6a88aa;font-size:11px;padding:4px 0;border-bottom:1px solid #1a2d4533}
+
+.impact-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.impact-box{border-radius:10px;padding:16px;text-align:center}
+.impact-box-label{color:#4a6080;font-size:11px;margin-bottom:6px}
+.impact-box-pct{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700}
+.impact-box-trend{font-size:12px;margin-top:4px}
+.confidence-row{display:flex;justify-content:space-between;margin-bottom:4px}
+.confidence-label{color:#4a6080;font-size:12px}
+.confidence-val{color:#fff;font-size:12px;font-family:'IBM Plex Mono',monospace}
+.confidence-bar-bg{height:6px;background:#1a2d45;border-radius:3px}
+.confidence-bar-fill{height:100%;background:linear-gradient(90deg,#00c8ff,#00e5a0);border-radius:3px;transition:width .8s}
+.reasoning-box{background:#0e1829;border-radius:8px;padding:14px;border-left:3px solid #ffd166;color:#8fa8c8;font-size:13px;line-height:1.8;margin-top:12px}
+.warning-box{margin-top:12px;padding:10px;background:rgba(255,64,96,.07);border-radius:6px;color:#ff4060;font-size:11px}
+
+/* 블로그 / X */
+.blog-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.blog-header-title{color:#00c8ff;font-weight:700;font-size:14px}
+.blog-content{background:#0e1829;border-radius:10px;padding:20px;border:1px solid #1a2d45}
+.blog-para{color:#8fa8c8;font-size:13px;line-height:2.0;margin-bottom:16px}
+.blog-para.heading{color:#fff;font-size:15px;font-weight:700}
+.x-card{background:#0e1829;border-radius:14px;padding:20px;border:1px solid #1a2d45}
+.x-profile{display:flex;gap:12px;margin-bottom:14px;align-items:center}
+.x-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#00c8ff,#0070cc);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.x-name{font-weight:700;color:#fff;font-size:14px}
+.x-handle{color:#4a6080;font-size:12px}
+.x-body{color:#dde6f0;font-size:14px;line-height:1.9;white-space:pre-wrap}
+.x-count{margin-top:12px;color:#4a6080;font-size:11px}
+.copy-btn{border-radius:6px;padding:5px 14px;font-size:12px;cursor:pointer;border:1px solid;transition:all .3s;font-family:inherit}
+
+/* 로딩 / 상태 */
+#loading{text-align:center;padding:80px 0;display:none}
+.spinner{width:48px;height:48px;border:3px solid #1a2d45;border-top:3px solid #00c8ff;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px}
+.spinner-msg{color:#4a6080;font-size:13px}
+#idle-msg{text-align:center;padding:50px 0 20px;display:block}
+.idle-text{color:#4a6080;font-size:13px;margin-bottom:18px}
+.demo-btn{background:rgba(0,200,255,.1);color:#00c8ff;border:1px solid rgba(0,200,255,.27);border-radius:8px;padding:10px 24px;font-size:13px;cursor:pointer;font-family:inherit;transition:background .2s}
+#error-msg{text-align:center;padding:40px;color:#ff4060;display:none}
+#report-container{display:none}
+svg{overflow:visible}
+@media(max-width:600px){ .impact-grid{grid-template-columns:1fr} .ticker-header{flex-direction:column} .price-right{text-align:left} }
+</style>
+</head>
+<body>
+
+<div id="header">
+  <div id="header-inner">
+    <div class="logo-row">
+      <div class="logo-icon">📡</div>
+      <div>
+        <div class="logo-title">MARKET<span>LENS</span></div>
+        <div class="logo-sub">AI-POWERED NEWS &amp; STOCK ANALYSIS</div>
+      </div>
+    </div>
+    <div class="search-row">
+      <input id="url-input" type="text" placeholder="뉴스 URL 또는 기사 제목/키워드를 입력하세요..."/>
+      <button id="analyze-btn" onclick="analyze()">🔍 분석</button>
+    </div>
+  </div>
+</div>
+
+<div id="main">
+  <div id="idle-msg">
+    <div class="idle-text">분석하고 싶은 뉴스 URL이나 키워드(예: "엔비디아 실적")를 입력해보세요</div>
+    <button class="demo-btn" onclick="loadDemo()">📊 IONQ×KISTI 실제 기사 데모 보기</button>
+  </div>
+
+  <div id="loading">
+    <div class="spinner"></div>
+    <div class="spinner-msg" id="loading-msg">데이터 수집 중...</div>
+    <div id="loading-steps" style="margin-top:20px;display:flex;flex-direction:column;gap:8px;max-width:320px;margin-left:auto;margin-right:auto">
+      <div class="step-item" id="step1"><span class="step-dot" style="width:8px;height:8px;border-radius:50%;background:#1a2d45;display:inline-block;margin-right:10px"></span>📰 뉴스 내용 분석 및 검색</div>
+      <div class="step-item" id="step2"><span class="step-dot" style="width:8px;height:8px;border-radius:50%;background:#1a2d45;display:inline-block;margin-right:10px"></span>💬 시장 감성 데이터 추출</div>
+      <div class="step-item" id="step3"><span class="step-dot" style="width:8px;height:8px;border-radius:50%;background:#1a2d45;display:inline-block;margin-right:10px"></span>📊 주가·기술 지표 수집</div>
+      <div class="step-item" id="step4"><span class="step-dot" style="width:8px;height:8px;border-radius:50%;background:#1a2d45;display:inline-block;margin-right:10px"></span>🎯 AI 영향도 예측 생성</div>
+    </div>
+  </div>
+
+  <div id="error-msg"></div>
+
+  <div id="report-container">
+    <div class="card card-gradient" id="ticker-card">
+      <div class="ticker-header">
+        <div class="ticker-left">
+          <div class="ticker-row">
+            <span class="ticker-symbol" id="t-symbol">$---</span>
+            <span class="tag" id="t-company" style="background:rgba(0,200,255,.13);color:#00c8ff;border:1px solid rgba(0,200,255,.27)">Company</span>
+          </div>
+          <div class="ticker-meta" id="t-meta">Source · Date</div>
+        </div>
+        <div class="price-right">
+          <div class="price-main" id="t-price">$00.00</div>
+          <div class="price-change" id="t-change">-- (0.00%)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('report',this)">📋 분석 리포트</button>
+      <button class="tab-btn" onclick="switchTab('blog',this)">✍️ 블로그</button>
+      <button class="tab-btn" onclick="switchTab('x',this)">𝕏 포스팅</button>
+    </div>
+
+    <div id="tab-report">
+      <div class="card">
+        <div class="sec-head"><span class="icon">📰</span><span class="title">기사 요약</span></div>
+        <div class="img-banner" id="img-main" style="height:180px"><img id="img-main-src" src="" alt=""/></div>
+        <div class="article-title" id="article-title">제목</div>
+        <div class="article-body" id="article-body">요약</div>
+        <a id="article-link" href="#" target="_blank" style="display:inline-block;margin-top:10px;font-size:12px">🔗 원문 보기 →</a>
+      </div>
+
+      <div class="card">
+        <div class="sec-head"><span class="icon">📊</span><span class="title">기술적 분석 차트</span></div>
+        <div class="chart-label-text">📈 3개월 주가 흐름 (상대적 수치)</div>
+        <svg id="daily-svg" viewBox="0 0 700 200" style="width:100%;height:auto"></svg>
+        <div class="tech-summary-box">
+          <div class="tech-summary-text" id="tech-summary-text">기술 분석 정보</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="sec-head"><span class="icon">💬</span><span class="title">시장 감성 분석</span></div>
+        <div class="sentiment-wrap">
+          <div class="sentiment-gauge">
+            <svg id="gauge-svg" viewBox="0 0 120 72" style="width:120px"></svg>
+            <div class="sentiment-label">종합 Sentiment</div>
+          </div>
+          <div class="sentiment-detail">
+            <div class="sent-bar-wrap">
+              <div class="sent-bar">
+                <div class="sent-bar-pos" id="tw-pos-bar"></div>
+                <div class="sent-bar-neu" id="tw-neu-bar"></div>
+                <div class="sent-bar-neg" id="tw-neg-bar"></div>
+              </div>
+              <div class="sent-legend">
+                <span class="pos">● 긍정 <span id="tw-pos">--</span>%</span>
+                <span class="neg">● 부정 <span id="tw-neg">--</span>%</span>
+              </div>
+            </div>
+            <div id="tw-tweets"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="sec-head"><span class="icon">🎯</span><span class="title">주가 영향 예측</span></div>
+        <div class="impact-grid">
+          <div class="impact-box" id="short-term-box">
+            <div class="impact-box-label">단기 전망</div>
+            <div class="impact-box-pct" id="short-pct">--</div>
+          </div>
+          <div class="impact-box" id="mid-term-box">
+            <div class="impact-box-label">중기 전망</div>
+            <div class="impact-box-pct" id="mid-pct">--</div>
+          </div>
+        </div>
+        <div class="reasoning-box" id="reasoning-text">예측 근거 설명</div>
+      </div>
+    </div>
+
+    <div id="tab-blog" style="display:none">
+      <div class="card">
+        <div class="blog-header">
+          <span class="blog-header-title">✍️ 블로그 포스팅용</span>
+          <button class="copy-btn" id="copy-blog-btn" onclick="copyText('blog')">📋 복사</button>
+        </div>
+        <div class="blog-content" id="blog-content"></div>
+      </div>
+    </div>
+
+    <div id="tab-x" style="display:none">
+      <div class="card">
+        <div class="blog-header">
+          <span class="blog-header-title">𝕏 X (트위터) 포스팅용</span>
+          <button class="copy-btn" id="copy-x-btn" onclick="copyText('x')">📋 복사</button>
+        </div>
+        <div class="x-card">
+          <div class="x-body" id="x-body">내용</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const C = { bg:"#070d1a", accent:"#00c8ff", green:"#00e5a0", red:"#ff4060", yellow:"#ffd166", text:"#dde6f0", muted:"#4a6080", white:"#fff", border:"#1a2d45" };
+
+async function analyze() {
+  const userInput = document.getElementById('url-input').value.trim();
+  if (!userInput) return;
+  
+  const btn = document.getElementById('analyze-btn');
+  btn.disabled = true;
+  document.getElementById('idle-msg').style.display = 'none';
+  document.getElementById('report-container').style.display = 'none';
+  document.getElementById('error-msg').style.display = 'none';
+  document.getElementById('loading').style.display = 'block';
+  
+  const isUrl = userInput.startsWith('http');
+  setLoadingMsg(isUrl ? "📰 뉴스 기사 분석 중..." : `🔍 "${userInput}" 관련 최신 뉴스 검색 중...`, 1);
+
+  // 이 부분은 실제 API 연동이 필요하며, 아래는 동작 논리 구조입니다.
+  try {
+    // 1. 뉴스 데이터 수집 (URL 직접 분석 또는 키워드 검색 기반 분석)
+    // 2. 종목 식별 및 주가 데이터 수집
+    // 3. AI 리포트 생성
+    // (현재는 데모 데이터를 보여주거나 실제 구현 시 Claude/Gemini API 호출 로직이 들어갑니다)
+    
+    setTimeout(() => {
+        setLoadingMsg("📊 주가 지표 및 차트 생성 중...", 3);
+        setTimeout(() => {
+            loadDemo(); // 실제 API가 없으므로 데모로 전환
+        }, 1000);
+    }, 1500);
+
+  } catch(e) {
+    document.getElementById('loading').style.display = 'none';
+    const errEl = document.getElementById('error-msg');
+    errEl.innerHTML = `⚠️ 분석 실패: ${e.message}`;
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function setLoadingMsg(msg, stepNum) {
+  document.getElementById('loading-msg').textContent = msg;
+  for (let i=1; i<=4; i++) {
+    const item = document.getElementById('step'+i);
+    const dot = item.querySelector('.step-dot');
+    if (i < stepNum) { dot.style.background = C.green; item.style.color = C.green; }
+    else if (i === stepNum) { dot.style.background = C.accent; item.style.color = C.accent; }
+    else { dot.style.background = '#1a2d45'; item.style.color = C.muted; }
+  }
+}
+
+function renderReport(r) {
+  document.getElementById('t-symbol').textContent = '$' + r.ticker;
+  document.getElementById('t-company').textContent = r.companyName;
+  document.getElementById('t-price').textContent = '$' + r.price;
+  document.getElementById('t-change').textContent = r.priceChangePct + '%';
+  document.getElementById('t-change').style.color = r.priceChangePct > 0 ? C.green : C.red;
+  document.getElementById('article-title').textContent = r.articleTitle;
+  document.getElementById('article-body').textContent = r.articleSummary;
+  document.getElementById('img-main-src').src = `https://source.unsplash.com/800x400/?${r.unsplashQuery}`;
+  document.getElementById('tech-summary-text').textContent = r.technicalSummary;
+  document.getElementById('short-pct').textContent = r.impactPrediction.shortTermPct;
+  document.getElementById('mid-pct').textContent = r.impactPrediction.midTermPct;
+  document.getElementById('reasoning-text').textContent = r.impactPrediction.reasoning;
+  
+  // Blog / X
+  document.getElementById('blog-content').innerHTML = r.blogPost.replace(/\n/g, '<br>');
+  document.getElementById('x-body').textContent = r.xPost;
+
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('report-container').style.display = 'block';
+  document.getElementById('report-container').className = 'fu';
+  
+  drawGauge(r.sentimentScore);
+  drawMiniChart();
+}
+
+// UI 헬퍼 함수들
+function switchTab(name, btn) {
+  ['report','blog','x'].forEach(t => document.getElementById('tab-'+t).style.display = (t===name?'block':'none'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function drawGauge(score) {
+  const svg = document.getElementById('gauge-svg');
+  svg.innerHTML = '';
+  const p = score/100;
+  const col = score > 60 ? C.green : score > 40 ? C.yellow : C.red;
+  const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path1.setAttribute("d", "M 10 60 A 50 50 0 0 1 110 60");
+  path1.setAttribute("fill", "none"); path1.setAttribute("stroke", C.border); path1.setAttribute("stroke-width", "10");
+  svg.appendChild(path1);
+  const path2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  const x = 60 - 50 * Math.cos(p * Math.PI); const y = 60 - 50 * Math.sin(p * Math.PI);
+  path2.setAttribute("d", `M 10 60 A 50 50 0 0 1 ${x} ${y}`);
+  path2.setAttribute("fill", "none"); path2.setAttribute("stroke", col); path2.setAttribute("stroke-width", "10");
+  svg.appendChild(path2);
+  const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+  text.setAttribute("x", "60"); text.setAttribute("y", "55"); text.setAttribute("text-anchor", "middle"); text.setAttribute("fill", "#fff");
+  text.textContent = score; svg.appendChild(text);
+}
+
+function drawMiniChart() {
+    const svg = document.getElementById('daily-svg');
+    svg.innerHTML = '';
+    let points = "";
+    for(let i=0; i<20; i++) {
+        const x = (i * 35);
+        const y = 100 + Math.sin(i * 0.5) * 40 + Math.random() * 20;
+        points += `${x},${y} `;
+    }
+    const poly = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+    poly.setAttribute("points", points); poly.setAttribute("fill", "none");
+    poly.setAttribute("stroke", C.accent); poly.setAttribute("stroke-width", "2");
+    svg.appendChild(poly);
+}
+
+function loadDemo() {
+  const DEMO = {
+    ticker:"IONQ", companyName:"IonQ Inc.", price:38.15, priceChangePct:15.67,
+    articleTitle:"IonQ, KISTI와 양자-HPC 통합 MOU 체결",
+    articleSummary:"NVIDIA NVQLink를 활용하여 한국의 슈퍼컴퓨팅 인프라와 양자 컴퓨터를 결합하는 전략적 협력입니다.",
+    unsplashQuery:"quantum computing", technicalSummary:"상승 모멘텀이 강하며 거래량이 폭증하고 있습니다.",
+    sentimentScore:85, impactPrediction: { shortTermPct:"+10~15%", midTermPct:"+25%", reasoning:"정부 예산이 투입되는 실질적 수주 파이프라인 확보로 해석됩니다." },
+    blogPost:"IonQ와 한국 KISTI의 협력은 단순한 기술 제휴 이상의 의미를 가집니다...",
+    xPost:"$IONQ KISTI 협력 발표! 양자컴퓨팅 시대가 다가옵니다. #IONQ #양자컴퓨터"
+  };
+  renderReport(DEMO);
+}
+
+document.getElementById('url-input').addEventListener('keydown', e => { if(e.key==='Enter') analyze(); });
+</script>
+</body>
+</html>
