@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>MarketLens — AI 주식 뉴스 & 키워드 분석</title>
+<title>MarketLens — AI 주식 뉴스 분석</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@500;700&display=swap" rel="stylesheet"/>
 <style>
@@ -70,11 +70,19 @@ a{color:#00c8ff;text-decoration:none}
 .article-title{font-weight:700;font-size:15px;color:#fff;margin-bottom:10px;line-height:1.6}
 .article-body{color:#8fa8c8;font-size:13px;line-height:1.9}
 
+/* 볼린저 레전드 */
+.bb-legend{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.bb-vals{display:flex;gap:10px;font-size:11px}
+
+/* 차트 레이블 */
+.chart-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.chart-label-text{color:#4a6080;font-size:11px}
+
 /* 기술 요약 박스 */
 .tech-summary-box{margin-top:16px;padding:14px;background:#0e1829;border-radius:8px;border-left:3px solid #00c8ff}
 .tech-summary-text{color:#8fa8c8;font-size:13px;line-height:1.8}
 
-/* Sentiment / Impact / Others - CSS remains the same from your original source */
+/* Sentiment */
 .sentiment-wrap{display:flex;align-items:flex-start;gap:24px;flex-wrap:wrap}
 .sentiment-gauge{text-align:center;flex-shrink:0}
 .sentiment-label{color:#4a6080;font-size:11px;margin-top:4px}
@@ -91,6 +99,7 @@ a{color:#00c8ff;text-decoration:none}
 .sent-legend .neg{color:#ff4060}
 .sent-comment{color:#6a88aa;font-size:11px;padding:4px 0;border-bottom:1px solid #1a2d4533}
 
+/* 영향 예측 */
 .impact-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
 .impact-box{border-radius:10px;padding:16px;text-align:center}
 .impact-box-label{color:#4a6080;font-size:11px;margin-bottom:6px}
@@ -104,12 +113,14 @@ a{color:#00c8ff;text-decoration:none}
 .reasoning-box{background:#0e1829;border-radius:8px;padding:14px;border-left:3px solid #ffd166;color:#8fa8c8;font-size:13px;line-height:1.8;margin-top:12px}
 .warning-box{margin-top:12px;padding:10px;background:rgba(255,64,96,.07);border-radius:6px;color:#ff4060;font-size:11px}
 
-/* 블로그 / X */
+/* 블로그 */
 .blog-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .blog-header-title{color:#00c8ff;font-weight:700;font-size:14px}
 .blog-content{background:#0e1829;border-radius:10px;padding:20px;border:1px solid #1a2d45}
 .blog-para{color:#8fa8c8;font-size:13px;line-height:2.0;margin-bottom:16px}
 .blog-para.heading{color:#fff;font-size:15px;font-weight:700}
+
+/* X 포스팅 */
 .x-card{background:#0e1829;border-radius:14px;padding:20px;border:1px solid #1a2d45}
 .x-profile{display:flex;gap:12px;margin-bottom:14px;align-items:center}
 .x-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#00c8ff,#0070cc);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
@@ -117,99 +128,210 @@ a{color:#00c8ff;text-decoration:none}
 .x-handle{color:#4a6080;font-size:12px}
 .x-body{color:#dde6f0;font-size:14px;line-height:1.9;white-space:pre-wrap}
 .x-count{margin-top:12px;color:#4a6080;font-size:11px}
+
+/* 복사 버튼 */
 .copy-btn{border-radius:6px;padding:5px 14px;font-size:12px;cursor:pointer;border:1px solid;transition:all .3s;font-family:inherit}
 
-/* 로딩 / 상태 */
+/* 로딩 */
 #loading{text-align:center;padding:80px 0;display:none}
 .spinner{width:48px;height:48px;border:3px solid #1a2d45;border-top:3px solid #00c8ff;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 20px}
 .spinner-msg{color:#4a6080;font-size:13px}
+
+/* idle / error */
 #idle-msg{text-align:center;padding:50px 0 20px;display:block}
-.idle-text{color:#4a6080;font-size:13px;margin-bottom:18px}
+.idle-text{color:#4a6080;font-size:13px;margin-bottom:6px}
 .demo-btn{background:rgba(0,200,255,.1);color:#00c8ff;border:1px solid rgba(0,200,255,.27);border-radius:8px;padding:10px 24px;font-size:13px;cursor:pointer;font-family:inherit;transition:background .2s}
+.demo-btn:hover{background:rgba(0,200,255,.18)}
 #error-msg{text-align:center;padding:40px;color:#ff4060;display:none}
+
+/* 검색결과 패널 */
+#search-results{background:#0e1829;border:1px solid #1a2d45;border-radius:14px;padding:20px;margin-bottom:16px}
+.news-card{background:#121f33;border:1px solid #1a2d45;border-radius:10px;padding:14px 16px;cursor:pointer;transition:all .2s;display:flex;gap:12px;align-items:flex-start}
+.news-card:hover{border-color:#00c8ff55;background:#162540;transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,200,255,.08)}
+.news-card-num{width:22px;height:22px;border-radius:50%;background:rgba(0,200,255,.15);color:#00c8ff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.news-card-body{flex:1;min-width:0}
+.news-card-title{color:#dde6f0;font-size:13px;font-weight:600;line-height:1.55;margin-bottom:6px}
+.news-card-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:5px}
+.news-card-source{color:#00c8ff;font-size:10px;background:rgba(0,200,255,.1);padding:2px 7px;border-radius:3px;font-weight:600}
+.news-card-date{color:#4a6080;font-size:10px}
+.news-card-url{color:#4a6080;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.news-card-right{display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0}
+.news-card-analyze-btn{background:linear-gradient(135deg,#00c8ff,#0070cc);color:#000;border:none;border-radius:6px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;transition:opacity .2s}
+.news-card-analyze-btn:hover{opacity:.85}
+.news-card-link{color:#4a6080;font-size:10px;text-decoration:none}
+.news-card-link:hover{color:#00c8ff}
+
+/* 리포트 컨테이너 */
 #report-container{display:none}
+
+/* SVG 공통 */
 svg{overflow:visible}
-@media(max-width:600px){ .impact-grid{grid-template-columns:1fr} .ticker-header{flex-direction:column} .price-right{text-align:left} }
+
+@media(max-width:600px){
+  .impact-grid{grid-template-columns:1fr}
+  .ticker-header{flex-direction:column}
+  .price-right{text-align:left}
+}
 </style>
 </head>
 <body>
 
+<!-- ── 헤더 ── -->
 <div id="header">
   <div id="header-inner">
     <div class="logo-row">
       <div class="logo-icon">📡</div>
       <div>
         <div class="logo-title">MARKET<span>LENS</span></div>
-        <div class="logo-sub">AI-POWERED NEWS &amp; STOCK ANALYSIS</div>
+        <div class="logo-sub">AI-POWERED NEWS &amp; STOCK ANALYSIS · US MARKET</div>
       </div>
     </div>
     <div class="search-row">
-      <input id="url-input" type="text" placeholder="뉴스 URL 또는 기사 제목/키워드를 입력하세요..."/>
-      <button id="analyze-btn" onclick="analyze()">🔍 분석</button>
+      <input id="url-input" type="text" placeholder="뉴스 URL 또는 기사 제목·키워드 입력 (예: IonQ KISTI quantum)..."/>
+      <button id="analyze-btn" onclick="handleInput()">🔍 검색</button>
     </div>
   </div>
 </div>
 
+<!-- ── 메인 ── -->
 <div id="main">
+
+  <!-- idle -->
   <div id="idle-msg">
-    <div class="idle-text">분석하고 싶은 뉴스 URL이나 키워드(예: "엔비디아 실적")를 입력해보세요</div>
-    <button class="demo-btn" onclick="loadDemo()">📊 IONQ×KISTI 실제 기사 데모 보기</button>
+    <div class="idle-text">뉴스 URL 또는 키워드·기사 제목을 입력하세요</div>
+    <div style="color:#4a6080;font-size:12px;margin-bottom:18px">예: "IonQ KISTI quantum" · "NVDA earnings" · "https://..."</div>
+    <button class="demo-btn" onclick="loadDemo()">📊 IONQ×KISTI×NVIDIA 데모 보기</button>
   </div>
 
+  <!-- 검색 결과 패널 -->
+  <div id="search-results" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div style="color:#00c8ff;font-weight:700;font-size:13px;letter-spacing:1px">🔎 관련 뉴스 검색 결과</div>
+      <button onclick="closeSearch()" style="background:none;border:none;color:#4a6080;font-size:12px;cursor:pointer">✕ 닫기</button>
+    </div>
+    <div id="search-query-label" style="color:#4a6080;font-size:11px;margin-bottom:12px"></div>
+    <div id="search-result-list" style="display:flex;flex-direction:column;gap:10px"></div>
+  </div>
+
+  <!-- 로딩 -->
   <div id="loading">
     <div class="spinner"></div>
-    <div class="spinner-msg" id="loading-msg">데이터 수집 중...</div>
+    <div class="spinner-msg" id="loading-msg">분석 중...</div>
     <div id="loading-steps" style="margin-top:20px;display:flex;flex-direction:column;gap:8px;max-width:320px;margin-left:auto;margin-right:auto">
-      <div class="step-item" id="step1"><span class="step-dot" style="width:8px;height:8px;border-radius:50%;background:#1a2d45;display:inline-block;margin-right:10px"></span>📰 뉴스 내용 분석 및 검색</div>
-      <div class="step-item" id="step2"><span class="step-dot" style="width:8px;height:8px;border-radius:50%;background:#1a2d45;display:inline-block;margin-right:10px"></span>💬 시장 감성 데이터 추출</div>
-      <div class="step-item" id="step3"><span class="step-dot" style="width:8px;height:8px;border-radius:50%;background:#1a2d45;display:inline-block;margin-right:10px"></span>📊 주가·기술 지표 수집</div>
-      <div class="step-item" id="step4"><span class="step-dot" style="width:8px;height:8px;border-radius:50%;background:#1a2d45;display:inline-block;margin-right:10px"></span>🎯 AI 영향도 예측 생성</div>
+      <div class="step-item" id="step1" style="display:flex;align-items:center;gap:10px;color:#4a6080;font-size:12px">
+        <span class="step-dot" style="width:8px;height:8px;border-radius:50%;background:#1a2d45;flex-shrink:0"></span>
+        <span>📰 뉴스 기사 내용 분석</span>
+      </div>
+      <div class="step-item" id="step2" style="display:flex;align-items:center;gap:10px;color:#4a6080;font-size:12px">
+        <span class="step-dot" style="width:8px;height:8px;border-radius:50%;background:#1a2d45;flex-shrink:0"></span>
+        <span>💬 X/Reddit 감성 분석</span>
+      </div>
+      <div class="step-item" id="step3" style="display:flex;align-items:center;gap:10px;color:#4a6080;font-size:12px">
+        <span class="step-dot" style="width:8px;height:8px;border-radius:50%;background:#1a2d45;flex-shrink:0"></span>
+        <span>📊 주가·기술 지표 수집</span>
+      </div>
+      <div class="step-item" id="step4" style="display:flex;align-items:center;gap:10px;color:#4a6080;font-size:12px">
+        <span class="step-dot" style="width:8px;height:8px;border-radius:50%;background:#1a2d45;flex-shrink:0"></span>
+        <span>🎯 영향도 예측 생성</span>
+      </div>
     </div>
   </div>
 
+  <!-- 에러 -->
   <div id="error-msg"></div>
 
-  <div id="report-container">
+  <!-- 리포트 -->
+  <div id="report-container" class="fu">
+
+    <!-- 티커 헤더 -->
     <div class="card card-gradient" id="ticker-card">
       <div class="ticker-header">
         <div class="ticker-left">
           <div class="ticker-row">
-            <span class="ticker-symbol" id="t-symbol">$---</span>
-            <span class="tag" id="t-company" style="background:rgba(0,200,255,.13);color:#00c8ff;border:1px solid rgba(0,200,255,.27)">Company</span>
+            <span class="ticker-symbol" id="t-symbol">$IONQ</span>
+            <span class="tag" id="t-company" style="background:rgba(0,200,255,.13);color:#00c8ff;border:1px solid rgba(0,200,255,.27)">IonQ Inc.</span>
+            <span class="tag" style="background:rgba(74,96,128,.2);color:#4a6080;border:1px solid rgba(74,96,128,.3)">NYSE/NASDAQ</span>
           </div>
-          <div class="ticker-meta" id="t-meta">Source · Date</div>
+          <div class="ticker-meta" id="t-meta">📰 Bloomberg · 2025-03-16</div>
         </div>
         <div class="price-right">
-          <div class="price-main" id="t-price">$00.00</div>
-          <div class="price-change" id="t-change">-- (0.00%)</div>
+          <div class="price-main" id="t-price">$33.29</div>
+          <div class="price-change" id="t-change">▲ 0.31 (0.94%)</div>
+          <div class="price-after" id="t-after">시간외 $33.36 (+0.070)</div>
+          <div class="price-prev" id="t-prev">전일종가 $32.98</div>
         </div>
       </div>
     </div>
 
+    <!-- 탭 -->
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('report',this)">📋 분석 리포트</button>
       <button class="tab-btn" onclick="switchTab('blog',this)">✍️ 블로그</button>
       <button class="tab-btn" onclick="switchTab('x',this)">𝕏 포스팅</button>
     </div>
 
+    <!-- ── 분석 리포트 탭 ── -->
     <div id="tab-report">
+
+      <!-- 기사 요약 -->
       <div class="card">
         <div class="sec-head"><span class="icon">📰</span><span class="title">기사 요약</span></div>
         <div class="img-banner" id="img-main" style="height:180px"><img id="img-main-src" src="" alt=""/></div>
         <div class="article-title" id="article-title">제목</div>
         <div class="article-body" id="article-body">요약</div>
-        <a id="article-link" href="#" target="_blank" style="display:inline-block;margin-top:10px;font-size:12px">🔗 원문 보기 →</a>
+        <a id="article-link" href="#" target="_blank" rel="noreferrer" style="display:inline-block;margin-top:10px;font-size:12px">🔗 원문 보기 →</a>
       </div>
 
+      <!-- 기술 차트 -->
       <div class="card">
         <div class="sec-head"><span class="icon">📊</span><span class="title">기술적 분석 차트</span></div>
-        <div class="chart-label-text">📈 3개월 주가 흐름 (상대적 수치)</div>
+
+        <!-- 3개월 일봉 주가 차트 -->
+        <div class="chart-label" style="flex-wrap:wrap;gap:6px">
+          <div class="chart-label-text">📈 3개월 일봉 주가 — 전일종가 <span style="color:#ffd166;font-family:'IBM Plex Mono',monospace" id="prev-close-label">$32.98</span> 기준선</div>
+          <div id="daily-range-label" style="color:#4a6080;font-size:10px"></div>
+        </div>
         <svg id="daily-svg" viewBox="0 0 700 200" style="width:100%;height:auto"></svg>
+
+        <div class="divider"></div>
+
+        <!-- 볼린저밴드 (3개월) -->
+        <div class="bb-legend">
+          <div class="chart-label-text">🎯 볼린저밴드 (20,2) — 3개월</div>
+          <div class="bb-vals">
+            <span style="color:#ff4060">상단 <span id="bb-upper">$35.4</span></span>
+            <span style="color:#ffd166">중심 <span id="bb-mid">$32.3</span></span>
+            <span style="color:#00e5a0">하단 <span id="bb-lower">$29.2</span></span>
+          </div>
+        </div>
+        <svg id="bollinger-svg" viewBox="0 0 700 180" style="width:100%;height:auto"></svg>
+
+        <div class="divider"></div>
+
+        <!-- Williams %R (3개월) -->
+        <div class="chart-label">
+          <div class="chart-label-text">📉 Williams %R (14) — 3개월</div>
+          <div id="wr-label" style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:13px">-18 — ⚠️ 과매수</div>
+        </div>
+        <svg id="williams-svg" viewBox="0 0 700 110" style="width:100%;height:auto"></svg>
+
+        <div class="divider"></div>
+
+        <!-- 거래량 (3개월) -->
+        <div class="chart-label">
+          <div class="chart-label-text">📦 거래량 — 3개월</div>
+          <div id="vol-label" style="font-weight:700;font-size:12px;color:#00e5a0">평균 대비 +57%</div>
+        </div>
+        <svg id="volume-svg" viewBox="0 0 700 110" style="width:100%;height:auto"></svg>
+
+        <!-- 기술 요약 -->
         <div class="tech-summary-box">
-          <div class="tech-summary-text" id="tech-summary-text">기술 분석 정보</div>
+          <div style="margin-bottom:8px"><span class="tag" id="tech-trend-tag" style="background:rgba(0,229,160,.13);color:#00e5a0;border:1px solid rgba(0,229,160,.27)">강세</span></div>
+          <div class="tech-summary-text" id="tech-summary-text">기술 요약</div>
         </div>
       </div>
 
+      <!-- Sentiment -->
       <div class="card">
         <div class="sec-head"><span class="icon">💬</span><span class="title">시장 감성 분석</span></div>
         <div class="sentiment-wrap">
@@ -218,98 +340,973 @@ svg{overflow:visible}
             <div class="sentiment-label">종합 Sentiment</div>
           </div>
           <div class="sentiment-detail">
-            <div class="sent-bar-wrap">
-              <div class="sent-bar">
-                <div class="sent-bar-pos" id="tw-pos-bar"></div>
-                <div class="sent-bar-neu" id="tw-neu-bar"></div>
-                <div class="sent-bar-neg" id="tw-neg-bar"></div>
+            <div style="margin-bottom:16px">
+              <div class="sent-section-title">𝕏 Twitter</div>
+              <div class="sent-bar-wrap">
+                <div class="sent-bar">
+                  <div class="sent-bar-pos" id="tw-pos-bar"></div>
+                  <div class="sent-bar-neu" id="tw-neu-bar"></div>
+                  <div class="sent-bar-neg" id="tw-neg-bar"></div>
+                </div>
+                <div class="sent-legend">
+                  <span class="pos">● 긍정 <span id="tw-pos">72</span>%</span>
+                  <span class="neu">● 중립 <span id="tw-neu">18</span>%</span>
+                  <span class="neg">● 부정 <span id="tw-neg">10</span>%</span>
+                </div>
               </div>
-              <div class="sent-legend">
-                <span class="pos">● 긍정 <span id="tw-pos">--</span>%</span>
-                <span class="neg">● 부정 <span id="tw-neg">--</span>%</span>
-              </div>
+              <div id="tw-tweets"></div>
             </div>
-            <div id="tw-tweets"></div>
+            <div>
+              <div class="sent-section-title">🤖 Reddit</div>
+              <div class="sent-bar-wrap">
+                <div class="sent-bar">
+                  <div class="sent-bar-pos" id="rd-pos-bar"></div>
+                  <div class="sent-bar-neu" id="rd-neu-bar"></div>
+                  <div class="sent-bar-neg" id="rd-neg-bar"></div>
+                </div>
+                <div class="sent-legend">
+                  <span class="pos">● 긍정 <span id="rd-pos">65</span>%</span>
+                  <span class="neu">● 중립 <span id="rd-neu">25</span>%</span>
+                  <span class="neg">● 부정 <span id="rd-neg">10</span>%</span>
+                </div>
+              </div>
+              <div id="rd-posts"></div>
+            </div>
           </div>
         </div>
       </div>
 
+      <!-- 영향 예측 -->
       <div class="card">
         <div class="sec-head"><span class="icon">🎯</span><span class="title">주가 영향 예측</span></div>
         <div class="impact-grid">
           <div class="impact-box" id="short-term-box">
-            <div class="impact-box-label">단기 전망</div>
-            <div class="impact-box-pct" id="short-pct">--</div>
+            <div class="impact-box-label">단기 (1~2주)</div>
+            <div class="impact-box-pct" id="short-pct">+5~12%</div>
+            <div class="impact-box-trend" id="short-trend">상승</div>
           </div>
           <div class="impact-box" id="mid-term-box">
-            <div class="impact-box-label">중기 전망</div>
-            <div class="impact-box-pct" id="mid-pct">--</div>
+            <div class="impact-box-label">중기 (1~3개월)</div>
+            <div class="impact-box-pct" id="mid-pct">+15~30%</div>
+            <div class="impact-box-trend" id="mid-trend">지속 상승</div>
           </div>
         </div>
-        <div class="reasoning-box" id="reasoning-text">예측 근거 설명</div>
+        <div>
+          <div class="confidence-row">
+            <span class="confidence-label">예측 신뢰도</span>
+            <span class="confidence-val" id="conf-val">74%</span>
+          </div>
+          <div class="confidence-bar-bg"><div class="confidence-bar-fill" id="conf-bar" style="width:74%"></div></div>
+        </div>
+        <div class="reasoning-box" id="reasoning-text">근거</div>
+        <div class="warning-box">⚠️ 본 분석은 AI 기반 참고 자료이며 투자 권유가 아닙니다. 모든 투자 결정은 본인 책임입니다.</div>
       </div>
-    </div>
+    </div><!-- /tab-report -->
 
+    <!-- ── 블로그 탭 ── -->
     <div id="tab-blog" style="display:none">
       <div class="card">
         <div class="blog-header">
-          <span class="blog-header-title">✍️ 블로그 포스팅용</span>
-          <button class="copy-btn" id="copy-blog-btn" onclick="copyText('blog')">📋 복사</button>
+          <span class="blog-header-title">✍️ 블로그 포스팅용 (서술형)</span>
+          <button class="copy-btn" id="copy-blog-btn" onclick="copyText('blog')">📋 블로그 복사</button>
         </div>
+        <div class="img-banner" id="img-blog" style="height:200px"><img id="img-blog-src" src="" alt=""/></div>
         <div class="blog-content" id="blog-content"></div>
+        <div class="img-banner" id="img-chart" style="height:160px;margin-top:16px"><img id="img-chart-src" src="" alt=""/></div>
       </div>
     </div>
 
+    <!-- ── X 탭 ── -->
     <div id="tab-x" style="display:none">
       <div class="card">
         <div class="blog-header">
           <span class="blog-header-title">𝕏 X (트위터) 포스팅용</span>
-          <button class="copy-btn" id="copy-x-btn" onclick="copyText('x')">📋 복사</button>
+          <button class="copy-btn" id="copy-x-btn" onclick="copyText('x')">📋 X 포스팅 복사</button>
         </div>
         <div class="x-card">
-          <div class="x-body" id="x-body">내용</div>
+          <div class="x-profile">
+            <div class="x-avatar">📡</div>
+            <div>
+              <div class="x-name">MarketLens AI</div>
+              <div class="x-handle">@marketlens_ai</div>
+            </div>
+          </div>
+          <div class="x-body" id="x-body">포스팅 내용</div>
+          <div class="x-count" id="x-count">0 / 280자</div>
         </div>
       </div>
     </div>
-  </div>
-</div>
+
+  </div><!-- /report-container -->
+</div><!-- /main -->
 
 <script>
-const C = { bg:"#070d1a", accent:"#00c8ff", green:"#00e5a0", red:"#ff4060", yellow:"#ffd166", text:"#dde6f0", muted:"#4a6080", white:"#fff", border:"#1a2d45" };
+// ── 색상 ──
+const C = {
+  bg:"#070d1a",surface:"#0e1829",card:"#121f33",border:"#1a2d45",
+  accent:"#00c8ff",accentD:"#0070cc",green:"#00e5a0",red:"#ff4060",
+  yellow:"#ffd166",purple:"#a78bfa",text:"#dde6f0",muted:"#4a6080",white:"#fff"
+};
 
-async function analyze() {
-  const userInput = document.getElementById('url-input').value.trim();
-  if (!userInput) return;
-  
+// ── 데모 데이터 ──
+// ── 실제 검색 기반 IONQ/KISTI 데모 데이터 (2026-03-17 기준) ──
+const DEMO = {
+  ticker:"IONQ", companyName:"IonQ Inc.",
+  articleUrl:"https://www.investing.com/news/company-news/ionq-partners-with-kisti-on-quantumhpc-integration-in-korea-93CH-4563885",
+  articleTitle:"IonQ, KISTI와 양자-HPC 통합 MOU 체결 — NVIDIA NVQLink 활용한 한국 양자 생태계 구축",
+  articleSummary:"IonQ(NYSE: IONQ)가 NVIDIA GTC에서 한국과학기술정보연구원(KISTI)과 양자-HPC 하이브리드 기술 협력을 위한 MOU를 체결했다고 발표했다. 이번 협약은 NVIDIA NVQLink를 활용해 IonQ의 트랩드이온 양자컴퓨터를 KISTI의 슈퍼컴퓨터 인프라와 연동하는 내용을 담고 있으며, 한국 내 양자-AI-HPC 생태계 구축을 목표로 한다. 2025년 12월에 체결된 100큐비트 IonQ Tempo 시스템 납품 계약의 후속으로, IonQ의 한국 내 전략적 입지가 더욱 강화되고 있다.",
+  publishedAt:"2026-03-16 09:00 ET", source:"Investing.com",
+  prevClose:32.98, openPrice:39.42, price:38.15, priceChange:5.17, priceChangePct:15.67,
+  afterHours:38.40, afterHoursChange:0.25, afterHoursChangePct:0.65,
+  // 3개월 일봉 데이터 (2025-12-17 ~ 2026-03-17, 약 63 거래일)
+  dailyData:{
+    dates:["12/17","12/18","12/19","12/20","12/23","12/24","12/26","12/27","12/30","12/31",
+           "1/2","1/3","1/6","1/7","1/8","1/9","1/10","1/13","1/14","1/15",
+           "1/16","1/17","1/21","1/22","1/23","1/24","1/27","1/28","1/29","1/30",
+           "1/31","2/3","2/4","2/5","2/6","2/7","2/10","2/11","2/12","2/13",
+           "2/14","2/18","2/19","2/20","2/21","2/24","2/25","2/26","2/27","2/28",
+           "3/3","3/4","3/5","3/6","3/7","3/10","3/11","3/12","3/13","3/14","3/17"],
+    closes:[24.8,25.4,23.9,22.5,21.8,22.1,23.4,24.0,23.1,22.6,
+            24.5,25.8,27.2,28.1,29.4,30.2,28.8,29.5,31.0,32.5,
+            33.8,35.2,36.1,34.8,33.5,34.2,35.6,37.1,38.5,39.2,
+            37.8,36.5,35.2,34.1,33.5,35.0,36.2,37.5,38.1,36.8,
+            35.5,34.2,33.1,32.5,31.8,33.2,34.5,35.8,34.2,33.1,
+            32.5,31.2,30.8,31.9,33.1,32.2,31.5,30.8,32.1,32.98,38.15],
+    opens: [24.2,25.0,25.2,23.7,22.0,21.9,22.0,23.5,23.8,23.0,
+            22.8,24.6,25.9,27.3,28.2,29.5,30.1,28.9,29.6,31.1,
+            32.6,33.9,35.3,36.0,34.7,33.6,34.3,35.7,37.2,38.6,
+            39.1,37.7,36.4,35.1,34.0,33.6,35.1,36.3,37.6,38.0,
+            36.7,35.4,34.1,33.0,32.4,31.9,33.3,34.6,35.7,34.1,
+            33.0,32.4,31.1,30.9,32.0,33.0,32.1,31.4,30.9,32.2,39.42],
+    highs: [25.6,26.2,25.5,24.1,22.8,22.5,23.8,24.5,24.2,23.5,
+            25.2,26.5,27.9,28.8,30.1,30.9,30.5,30.2,31.8,33.2,
+            34.5,36.0,37.2,36.5,34.9,35.0,36.3,37.8,39.2,40.1,
+            39.5,38.2,36.9,35.7,34.8,35.6,36.9,38.2,38.8,38.5,
+            37.1,35.8,34.6,33.5,32.8,33.9,35.1,36.5,36.0,34.5,
+            33.5,32.8,31.7,32.5,33.8,33.5,32.8,31.8,32.8,33.5,39.56],
+    lows:  [24.0,24.8,23.6,22.2,21.5,21.7,21.8,23.2,23.0,22.4,
+            22.5,24.3,25.6,27.0,28.0,29.2,28.5,28.7,29.3,30.8,
+            32.3,33.6,34.9,34.5,33.2,33.4,34.0,35.4,37.0,38.3,
+            37.5,36.2,35.0,34.0,33.3,33.3,35.0,36.0,37.3,36.5,
+            35.2,33.9,32.8,32.3,31.5,31.7,33.0,34.3,34.0,32.8,
+            32.2,31.0,30.6,30.7,31.8,31.8,31.2,30.5,31.7,32.7,37.85]
+  },
+  bollingerData:{
+    dates:["12/17","12/24","12/31","1/7","1/14","1/21","1/28","2/4","2/11","2/18","2/25","3/4","3/11","3/17"],
+    prices:[24.8,22.1,22.6,28.1,32.5,36.1,39.2,35.2,37.5,34.2,33.1,31.2,30.8,38.15],
+    upper: [31.5,30.2,29.8,33.5,37.8,41.2,44.5,42.1,43.8,41.5,39.8,37.5,36.2,42.1],
+    mid:   [26.5,25.8,25.2,28.8,31.5,34.2,36.8,35.5,36.2,34.8,33.5,32.1,31.5,34.5],
+    lower: [21.5,21.4,20.6,24.1,25.2,27.2,29.1,28.9,28.6,28.1,27.2,26.7,26.8,26.9]
+  },
+  williamsData:{
+    dates:["12/17","12/24","12/31","1/7","1/14","1/21","1/28","2/4","2/11","2/18","2/25","3/4","3/11","3/17"],
+    values:[-42,-28,-65,-35,-22,-18,-15,-45,-25,-55,-68,-72,-58,-8]
+  },
+  volumeData:{
+    dates:["12/17","12/24","12/31","1/7","1/14","1/21","1/28","2/4","2/11","2/18","2/25","3/4","3/11","3/17"],
+    volumes:[22.1,18.5,25.3,31.2,28.7,45.8,38.2,24.8,33.5,29.2,22.5,19.8,28.8,58.2],
+    avgVolume:28.8
+  },
+  bollingerUpper:42.1, bollingerMid:34.5, bollingerLower:26.9,
+  williamsR:-8, volume:58200000, avgVolume:28800000, volumeRatio:2.02,
+  technicalTrend:"강세",
+  technicalSummary:"NVIDIA GTC 발표 효과로 주가가 볼린저밴드 상단($42.1)을 향해 급등하며 전일 대비 +15.67% 상승했습니다. Williams %R -8로 단기 극과매수 구간에 진입하여 즉각적인 차익 실현 매물 출현 가능성이 있으나, 거래량이 평균의 2배(+102%)를 기록하며 기관 및 ETF 수급이 강하게 유입되고 있습니다. 볼린저밴드 폭이 크게 확대되는 구간으로 모멘텀 지속 여부가 관건입니다.",
+  sentimentScore:85,
+  twitterSentiment:{positive:78,neutral:14,negative:8,
+    topTweets:[
+      "@QuantumInvestor: $IONQ + KISTI + NVIDIA NVQLink = 아시아 양자 허브의 핵심. GTC에서 이 발표 나온 거 진짜 빅딜이다",
+      "@TechBullKR: 한국 정부 양자 전략 2035와 맞물린 IonQ의 포지셔닝. 단기 조정 와도 장기로 보면 여기가 저점"
+    ]},
+  redditSentiment:{positive:71,neutral:20,negative:9,
+    topPosts:[
+      "r/wallstreetbets: IONQ x NVIDIA x Korea government = triple catalyst. Calls are printing 🚀",
+      "r/stocks: This KISTI-NVIDIA-IonQ triangle is essentially locking in government revenue for years. Real revenue, not just hype"
+    ]},
+  impactPrediction:{
+    shortTerm:"강한 상승", shortTermPct:"+10~20%",
+    midTerm:"지속 상승", midTermPct:"+25~45%",
+    confidence:77,
+    reasoning:"NVIDIA GTC라는 세계 최대 AI·컴퓨팅 콘퍼런스에서 발표된 이번 MOU는 단순한 파트너십 이상의 의미를 지닙니다. NVIDIA NVQLink 아키텍처를 활용한 양자-GPU 연동은 업계 최초 시도로, IonQ가 양자컴퓨팅 상용화의 기술 표준을 선점하는 포석으로 해석됩니다. 한국 정부의 양자 전략 2035 예산이 뒷받침되는 만큼 매출 가시성도 크게 향상됩니다. 다만 Williams %R -8의 극과매수 구간은 단기 변동성 확대를 시사하며, NVIDIA GTC 이후 뉴스 소화 과정에서 일시적 조정이 나타날 수 있습니다."
+  },
+  unsplashQuery:"quantum computing supercomputer",
+  blogPost:`IonQ × KISTI × NVIDIA — 이 세 글자의 조합이 만들어낼 미래
+
+NVIDIA GTC 2026. 세계 최대 AI·컴퓨팅 콘퍼런스의 열기가 채 식지 않은 가운데, IonQ(NYSE: IONQ)가 조용하지만 묵직한 발표 하나를 내놓았다. 한국과학기술정보연구원(KISTI)과의 양자-HPC 하이브리드 기술 협력 MOU 체결. 처음 듣는 사람은 "또 MOU야?"라고 생각할 수도 있다. 하지만 이번엔 다르다.
+
+핵심은 NVIDIA NVQLink다.
+
+NVIDIA가 개발한 NVQLink는 양자컴퓨터와 GPU 기반 슈퍼컴퓨터를 직접 연결하는 개방형 아키텍처다. 쉽게 말해, IonQ의 트랩드이온 양자시스템과 KISTI의 세계적 수준 HPC 인프라가 물리적으로 하나의 하이브리드 플랫폼으로 합쳐진다는 뜻이다. 이런 통합이 실제로 구현되는 건 전 세계적으로도 손에 꼽힌다.
+
+배경을 살펴보면 이 발표의 무게가 더 명확해진다. IonQ와 KISTI의 인연은 하루 이틀이 아니다. 2025년 5월 첫 MOU를 체결했고, 같은 해 12월에는 100큐비트 IonQ Tempo 시스템을 한국 최대 슈퍼컴퓨터 KISTI-6(한강)에 통합하는 본 계약을 성사시켰다. 이번 발표는 그 연장선상에서 NVIDIA라는 카드를 추가한 3각 협력 구조의 완성이다.
+
+투자자 입장에서 중요한 건 '실제 돈'이다.
+
+한국 정부의 양자 전략 2035는 2035년까지 양자 분야에 수조 원을 투자하는 계획을 담고 있다. KISTI가 이 국가 프로젝트의 핵심 실행 기관이고, IonQ는 그 프로젝트의 1순위 양자 기술 공급사로 지정됐다. 즉, 이건 단순한 파트너십 홍보가 아니라 정부 예산이 직접 연결된 수주 파이프라인이다.
+
+기술적으로도 주가는 이미 반응했다. 오늘 IONQ는 전일 종가 $32.98 대비 +15.67% 급등한 $38.15로 마감했다. 볼린저밴드 상단을 향해 가파르게 상승 중이며, 거래량은 평균의 두 배를 넘어섰다. Williams %R은 -8로 단기 극과매수 구간이지만, 이 정도 뉴스 레벨에서는 모멘텀이 수일간 이어지는 경우가 많다.
+
+물론 냉정하게 봐야 할 부분도 있다. 고변동성 섹터인 양자컴퓨팅 주식의 특성상, 뉴스 소화 이후 차익 실현 매물이 한꺼번에 쏟아지는 패턴은 언제든 나타날 수 있다. GTC 이후의 흥분이 가라앉으면 실제 계약 규모와 매출 전환 시점에 대한 냉철한 평가가 뒤따를 것이다.
+
+하지만 큰 그림으로 보면, IonQ는 지금 아시아 양자 시장에서 누구도 쉽게 빼앗아 갈 수 없는 포지션을 구축해가고 있다. SK텔레콤, 현대자동차, 서울대, 성균관대에 이어 이번 KISTI까지. 양자컴퓨팅의 상용화가 본격화될 그 시점에, 한국이라는 시장의 열쇠를 IonQ가 쥐고 있다는 사실이 오늘 이 발표의 진짜 의미다.
+
+본 분석은 투자 권유가 아니며 참고용으로만 활용하시기 바랍니다.`,
+  xPost:`🚨 $IONQ 긴급 분석 #NVIDIAGT C
+
+IonQ × KISTI × NVIDIA NVQLink MOU ✅
+양자-HPC 통합 세계 최초 시도
+
+📊 기술적 신호
+• 전일比 +15.67% 급등 ($38.15)
+• 볼린저밴드 상단($42.1) 향해 상승
+• 거래량 평균比 +102% 폭증 🔺
+• Williams %R -8 (극과매수)
+
+🎯 예측
+단기: +10~20% | 중기: +25~45%
+신뢰도: 77%
+
+⚠️투자 권유 아님
+
+#IONQ #양자컴퓨팅 #미국주식 #KISTI`
+};
+
+let currentReport = null;
+let currentTab = 'report';
+
+// ── SVG 헬퍼 ──
+function svgEl(tag, attrs, text) {
+  const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+  for (const [k,v] of Object.entries(attrs||{})) el.setAttribute(k,v);
+  if (text !== undefined) el.textContent = text;
+  return el;
+}
+function clearSvg(id) { const s=document.getElementById(id); while(s.firstChild)s.removeChild(s.firstChild); return s; }
+
+// ── 공통: X축 레이블 간격 계산 (n개 데이터 중 최대 tick개) ──
+function xTicks(n, maxTick) {
+  const step = Math.ceil(n / maxTick);
+  const ticks = [];
+  for (let i=0; i<n; i+=step) ticks.push(i);
+  if (ticks[ticks.length-1] !== n-1) ticks.push(n-1);
+  return ticks;
+}
+
+// ── 차트: 3개월 일봉 주가 (캔들스틱 스타일 바) ──
+function drawDailyPrice(d, prevClose) {
+  const svg = clearSvg('daily-svg');
+  if (!d||!d.dates||d.dates.length<2) return;
+  const {dates, closes, opens, highs, lows} = d;
+  const n = dates.length;
+  const W=700, H=200, PL=54, PR=14, PT=14, PB=30;
+  const cw=W-PL-PR, ch=H-PT-PB;
+
+  // 범위 레이블 업데이트
+  const rangeEl = document.getElementById('daily-range-label');
+  if (rangeEl && dates.length>0) rangeEl.textContent = dates[0]+' ~ '+dates[n-1];
+
+  const allV=[...closes,...(highs||closes),...(lows||closes),prevClose].filter(v=>v>0);
+  const mn=Math.min(...allV)*0.985, mx=Math.max(...allV)*1.015;
+  const sx=i=>PL+((i+0.5)/n)*cw;
+  const sy=v=>PT+ch-((v-mn)/(mx-mn))*ch;
+  const bw=Math.max(2, Math.min(8, (cw/n)*0.6));
+
+  // 그라데이션
+  const gradId='dp'+Date.now();
+  const defs=svgEl('defs');
+  const grad=svgEl('linearGradient',{id:gradId,x1:"0",y1:"0",x2:"0",y2:"1"});
+  grad.appendChild(svgEl('stop',{offset:"0%","stop-color":C.accent,"stop-opacity":"0.06"}));
+  grad.appendChild(svgEl('stop',{offset:"100%","stop-color":C.accent,"stop-opacity":"0"}));
+  defs.appendChild(grad); svg.appendChild(defs);
+
+  // Y축 그리드 5개
+  const ySteps=5;
+  for(let i=0;i<=ySteps;i++){
+    const v=mn+(mx-mn)*(i/ySteps);
+    svg.appendChild(svgEl('line',{x1:PL,y1:sy(v),x2:W-PR,y2:sy(v),stroke:C.border,"stroke-width":"1","stroke-dasharray":"3,4"}));
+    svg.appendChild(svgEl('text',{x:PL-4,y:sy(v)+4,"text-anchor":"end",fill:C.muted,"font-size":"9"},"$"+v.toFixed(1)));
+  }
+
+  // 전일종가 기준선
+  if(prevClose>=mn && prevClose<=mx){
+    svg.appendChild(svgEl('line',{x1:PL,y1:sy(prevClose),x2:W-PR,y2:sy(prevClose),stroke:C.yellow,"stroke-width":"1.5","stroke-dasharray":"6,4"}));
+    svg.appendChild(svgEl('text',{x:W-PR+2,y:sy(prevClose)+4,fill:C.yellow,"font-size":"9","font-weight":"600"},"전일종가 $"+prevClose.toFixed(2)));
+  }
+
+  // 종가선 영역 채우기 (area chart)
+  const areaD=`M${sx(0)},${sy(closes[0])} `+closes.map((v,i)=>`L${sx(i)},${sy(v)}`).join(" ")+` L${sx(n-1)},${H-PB} L${sx(0)},${H-PB} Z`;
+  svg.appendChild(svgEl('path',{d:areaD,fill:`url(#${gradId})`}));
+
+  // 캔들 바: open/close 있으면 캔들, 없으면 단순 바
+  closes.forEach((close,i)=>{
+    const open=opens?opens[i]:close;
+    const high=highs?highs[i]:close;
+    const low=lows?lows[i]:close;
+    const isUp=close>=open;
+    const col=isUp?C.green:C.red;
+    // 고저 선
+    svg.appendChild(svgEl('line',{x1:sx(i),y1:sy(high),x2:sx(i),y2:sy(low),stroke:col+"99","stroke-width":"1"}));
+    // 몸통
+    const y1=sy(Math.max(open,close)), y2=sy(Math.min(open,close));
+    const barH=Math.max(1.5,y2-y1);
+    svg.appendChild(svgEl('rect',{x:sx(i)-bw/2,y:y1,width:bw,height:barH,fill:col,rx:"1"}));
+  });
+
+  // 종가 연결선 (얇게)
+  svg.appendChild(svgEl('polyline',{
+    points:closes.map((v,i)=>`${sx(i)},${sy(v)}`).join(" "),
+    fill:"none",stroke:C.accent+"66","stroke-width":"1"
+  }));
+
+  // 마지막 점
+  const lastClose=closes[n-1];
+  const dotCol=lastClose>=prevClose?C.green:C.red;
+  svg.appendChild(svgEl('circle',{cx:sx(n-1),cy:sy(lastClose),r:"5",fill:dotCol,stroke:C.bg,"stroke-width":"1.5"}));
+  svg.appendChild(svgEl('text',{x:sx(n-1)+8,y:sy(lastClose)+4,fill:dotCol,"font-size":"10","font-weight":"700"},"$"+lastClose.toFixed(2)));
+
+  // X축 날짜 레이블 (최대 10개)
+  xTicks(n,10).forEach(i=>{
+    svg.appendChild(svgEl('text',{x:sx(i),y:H-8,"text-anchor":"middle",fill:C.muted,"font-size":"8"},dates[i]));
+  });
+}
+
+// ── 차트: 볼린저밴드 (3개월 일봉) ──
+function drawBollinger(d) {
+  const svg = clearSvg('bollinger-svg');
+  if (!d||!d.dates) return;
+  const {dates,prices,upper,mid,lower}=d;
+  const W=700,H=180,PL=54,PR=14,PT=14,PB=28;
+  const cw=W-PL-PR,ch=H-PT-PB;
+  const all=[...prices,...upper,...lower];
+  const mn=Math.min(...all)*0.988,mx=Math.max(...all)*1.012;
+  const n=prices.length;
+  const sx=i=>PL+((i+0.5)/n)*cw;
+  const sy=v=>PT+ch-((v-mn)/(mx-mn))*ch;
+  const gradId='bg'+Date.now();
+
+  const defs=svgEl('defs');
+  const grad=svgEl('linearGradient',{id:gradId,x1:"0",y1:"0",x2:"0",y2:"1"});
+  grad.appendChild(svgEl('stop',{offset:"0%","stop-color":C.accent,"stop-opacity":"0.12"}));
+  grad.appendChild(svgEl('stop',{offset:"100%","stop-color":C.accent,"stop-opacity":"0.02"}));
+  defs.appendChild(grad); svg.appendChild(defs);
+
+  // Y 그리드
+  for(let i=0;i<=4;i++){
+    const v=mn+(mx-mn)*(i/4);
+    svg.appendChild(svgEl('line',{x1:PL,y1:sy(v),x2:W-PR,y2:sy(v),stroke:C.border,"stroke-width":"1"}));
+    svg.appendChild(svgEl('text',{x:PL-4,y:sy(v)+4,"text-anchor":"end",fill:C.muted,"font-size":"9"},"$"+v.toFixed(1)));
+  }
+
+  // 밴드 영역
+  const bandU=upper.map((v,i)=>`${sx(i)},${sy(v)}`).join(" ");
+  const bandL=[...lower].reverse().map((v,i)=>`${sx(n-1-i)},${sy(v)}`).join(" ");
+  svg.appendChild(svgEl('polygon',{points:bandU+" "+bandL,fill:`url(#${gradId})`}));
+
+  // 상단/중심/하단 선
+  [[upper,C.red,"4,3"],[mid,C.yellow,"4,3"],[lower,C.green,"4,3"]].forEach(([arr,col,dash])=>{
+    svg.appendChild(svgEl('polyline',{points:arr.map((v,i)=>`${sx(i)},${sy(v)}`).join(" "),fill:"none",stroke:col,"stroke-width":"1.5","stroke-dasharray":dash}));
+  });
+  // 주가선
+  svg.appendChild(svgEl('polyline',{points:prices.map((v,i)=>`${sx(i)},${sy(v)}`).join(" "),fill:"none",stroke:C.white,"stroke-width":"1.8"}));
+
+  // 마지막 점
+  svg.appendChild(svgEl('circle',{cx:sx(n-1),cy:sy(prices[n-1]),r:"4",fill:C.accent,stroke:C.bg,"stroke-width":"1.5"}));
+
+  // X축 날짜 (최대 10개)
+  xTicks(n,10).forEach(i=>{
+    svg.appendChild(svgEl('text',{x:sx(i),y:H-8,"text-anchor":"middle",fill:C.muted,"font-size":"8"},dates[i]));
+  });
+
+  // 레전드
+  [[PL+6,C.red,"── 상단"],[PL+56,C.yellow,"── 중심"],[PL+106,C.green,"── 하단"],[PL+156,C.white,"── 주가"]].forEach(([x,col,lbl])=>{
+    svg.appendChild(svgEl('text',{x,y:PT+12,fill:col,"font-size":"9"},lbl));
+  });
+}
+
+// ── 차트: Williams %R (3개월 일봉) ──
+function drawWilliams(d) {
+  const svg = clearSvg('williams-svg');
+  if (!d||!d.dates) return;
+  const {dates,values}=d;
+  const W=700,H=110,PL=42,PR=14,PT=12,PB=24;
+  const cw=W-PL-PR,ch=H-PT-PB;
+  const mn=-100,mx=0,n=values.length;
+  const sx=i=>PL+((i+0.5)/n)*cw;
+  const sy=v=>PT+ch-((v-mn)/(mx-mn))*ch;
+  const wrCol=v=>v>-20?C.red:v<-80?C.green:C.purple;
+
+  // 과매수/과매도 존
+  svg.appendChild(svgEl('rect',{x:PL,y:PT,width:cw,height:Math.max(0,sy(-20)-PT),fill:"rgba(255,64,96,.07)"}));
+  const y80=sy(-80), yBot=H-PB;
+  if(yBot>y80) svg.appendChild(svgEl('rect',{x:PL,y:y80,width:cw,height:yBot-y80,fill:"rgba(0,229,160,.07)"}));
+
+  [-20,-50,-80].forEach(v=>{
+    const col=v===-20?"rgba(255,64,96,.7)":v===-80?"rgba(0,229,160,.7)":C.border;
+    svg.appendChild(svgEl('line',{x1:PL,y1:sy(v),x2:W-PR,y2:sy(v),stroke:col,"stroke-width":"1","stroke-dasharray":"3,3"}));
+    svg.appendChild(svgEl('text',{x:PL-4,y:sy(v)+4,"text-anchor":"end",fill:C.muted,"font-size":"8"},v));
+  });
+
+  // 영역 채우기
+  const areaD=`M${sx(0)},${sy(values[0])} `+values.map((v,i)=>`L${sx(i)},${sy(v)}`).join(" ")+` L${sx(n-1)},${H-PB} L${sx(0)},${H-PB} Z`;
+  svg.appendChild(svgEl('path',{d:areaD,fill:C.purple+"18"}));
+
+  svg.appendChild(svgEl('polyline',{points:values.map((v,i)=>`${sx(i)},${sy(v)}`).join(" "),fill:"none",stroke:C.purple,"stroke-width":"1.8"}));
+
+  // 마지막 점
+  const lv=values[n-1];
+  svg.appendChild(svgEl('circle',{cx:sx(n-1),cy:sy(lv),r:"4",fill:wrCol(lv),stroke:C.bg,"stroke-width":"1.5"}));
+
+  // X축 (최대 10개)
+  xTicks(n,10).forEach(i=>{
+    svg.appendChild(svgEl('text',{x:sx(i),y:H-6,"text-anchor":"middle",fill:C.muted,"font-size":"8"},dates[i]));
+  });
+  svg.appendChild(svgEl('text',{x:W-PR-2,y:PT+10,"text-anchor":"end",fill:C.red,"font-size":"8"},"과매수(-20)"));
+  svg.appendChild(svgEl('text',{x:W-PR-2,y:sy(-80)-3,"text-anchor":"end",fill:C.green,"font-size":"8"},"과매도(-80)"));
+}
+
+// ── 차트: 거래량 (3개월 일봉) ──
+function drawVolume(d) {
+  const svg = clearSvg('volume-svg');
+  if (!d||!d.dates) return;
+  const {dates,volumes,avgVolume}=d;
+  const W=700,H=110,PL=48,PR=14,PT=10,PB=24;
+  const cw=W-PL-PR,ch=H-PT-PB;
+  const mx=Math.max(...volumes,avgVolume)*1.18,n=volumes.length;
+  const bw=Math.max(1.5,Math.min(7,(cw/n)*0.55));
+  const sx=i=>PL+((i+0.5)/n)*cw;
+  const sy=v=>PT+ch-(v/mx)*ch;
+
+  // 평균선
+  svg.appendChild(svgEl('line',{x1:PL,y1:sy(avgVolume),x2:W-PR,y2:sy(avgVolume),stroke:C.yellow,"stroke-width":"1.5","stroke-dasharray":"6,3"}));
+  svg.appendChild(svgEl('text',{x:W-PR-2,y:sy(avgVolume)-4,"text-anchor":"end",fill:C.yellow,"font-size":"8"},"평균 "+avgVolume.toFixed(1)+"M"));
+
+  // Y축
+  [0,mx/2,mx].forEach(v=>{
+    svg.appendChild(svgEl('text',{x:PL-4,y:sy(v)+4,"text-anchor":"end",fill:C.muted,"font-size":"8"},v.toFixed(0)+"M"));
+  });
+
+  // 바
+  volumes.forEach((v,i)=>{
+    const isLast=i===n-1, above=v>avgVolume;
+    const col=isLast?C.accent:above?"rgba(0,229,160,.65)":"rgba(74,96,128,.5)";
+    svg.appendChild(svgEl('rect',{x:sx(i)-bw/2,y:sy(v),width:bw,height:ch-(sy(v)-PT),fill:col,rx:"1.5"}));
+  });
+
+  // X축 (최대 10개)
+  xTicks(n,10).forEach(i=>{
+    svg.appendChild(svgEl('text',{x:sx(i),y:H-6,"text-anchor":"middle",fill:C.muted,"font-size":"8"},dates[i]));
+  });
+}
+
+// ── Sentiment 게이지 ──
+function drawGauge(score) {
+  const svg = clearSvg('gauge-svg');
+  const p=score/100, a=p*Math.PI;
+  const x=60-52*Math.cos(a),y=60-52*Math.sin(a);
+  const col=score>60?C.green:score>40?C.yellow:C.red;
+  svg.appendChild(svgEl('path',{d:"M 8 60 A 52 52 0 0 1 112 60",fill:"none",stroke:C.border,"stroke-width":"12","stroke-linecap":"round"}));
+  svg.appendChild(svgEl('path',{d:`M 8 60 A 52 52 0 ${p>0.5?1:0} 1 ${x.toFixed(1)} ${y.toFixed(1)}`,fill:"none",stroke:col,"stroke-width":"12","stroke-linecap":"round"}));
+  const t1=svgEl('text',{x:"60",y:"56","text-anchor":"middle",fill:C.white,"font-size":"20","font-weight":"700","font-family":"IBM Plex Mono"},score);
+  const t2=svgEl('text',{x:"60",y:"69","text-anchor":"middle",fill:C.muted,"font-size":"8"},"/ 100");
+  svg.appendChild(t1); svg.appendChild(t2);
+}
+
+// ── 리포트 렌더링 ──
+function renderReport(r) {
+  currentReport = r;
+  const pc = (r.priceChange||0)>=0;
+  const pCol = pc?C.green:C.red;
+
+  // 티커 헤더
+  document.getElementById('t-symbol').textContent = '$'+r.ticker;
+  document.getElementById('t-company').textContent = r.companyName;
+  document.getElementById('t-meta').textContent = '📰 '+r.source+' · '+r.publishedAt;
+  document.getElementById('t-price').textContent = '$'+(r.price||0).toFixed(2);
+  document.getElementById('t-change').textContent = (pc?'▲':'▼')+' '+Math.abs(r.priceChange||0).toFixed(2)+' ('+Math.abs(r.priceChangePct||0).toFixed(2)+'%)';
+  document.getElementById('t-change').style.color = pCol;
+  if (r.afterHours) document.getElementById('t-after').textContent = '시간외 $'+r.afterHours.toFixed(2)+' ('+(r.afterHoursChange>=0?'+':'')+r.afterHoursChange.toFixed(3)+')';
+  if (r.prevClose) document.getElementById('t-prev').textContent = '전일종가 $'+r.prevClose.toFixed(2);
+
+  // 이미지 (Unsplash)
+  const q = encodeURIComponent(r.unsplashQuery||'technology finance');
+  const mainImg = document.getElementById('img-main-src');
+  mainImg.src = 'https://source.unsplash.com/800x400/?'+q;
+  mainImg.onerror = ()=>document.getElementById('img-main').style.display='none';
+  document.getElementById('img-blog-src').src = mainImg.src;
+  document.getElementById('img-chart-src').src = 'https://source.unsplash.com/800x300/?stock,market,trading,finance';
+
+  // 기사
+  document.getElementById('article-title').textContent = r.articleTitle||'';
+  document.getElementById('article-body').textContent = r.articleSummary||'';
+  const linkEl = document.getElementById('article-link');
+  if (r.articleUrl && r.articleUrl.startsWith('http')) {
+    linkEl.href = r.articleUrl;
+    linkEl.style.display = 'inline-block';
+  } else {
+    linkEl.style.display = 'none';
+  }
+
+  // 차트
+  document.getElementById('prev-close-label').textContent = '$'+(r.prevClose||0).toFixed(2);
+  drawDailyPrice(r.dailyData, r.prevClose||(r.price-(r.priceChange||0)));
+  drawBollinger(r.bollingerData);
+  drawWilliams(r.williamsData);
+  drawVolume(r.volumeData);
+
+  // 볼린저 수치
+  document.getElementById('bb-upper').textContent = '$'+(r.bollingerUpper||0).toFixed(1);
+  document.getElementById('bb-mid').textContent = '$'+(r.bollingerMid||0).toFixed(1);
+  document.getElementById('bb-lower').textContent = '$'+(r.bollingerLower||0).toFixed(1);
+
+  // Williams 레이블
+  const wr = r.williamsR||0;
+  const wrLabel = wr>-20?'⚠️ 과매수':wr<-80?'✅ 과매도':'🔵 중립';
+  const wrCol = wr>-20?C.red:wr<-80?C.green:C.yellow;
+  document.getElementById('wr-label').textContent = wr.toFixed(1)+' — '+wrLabel;
+  document.getElementById('wr-label').style.color = wrCol;
+
+  // 거래량 레이블
+  const vr = r.volumeRatio||1;
+  document.getElementById('vol-label').textContent = '평균 대비 '+(vr>=1?'+':'')+((vr-1)*100).toFixed(0)+'%';
+  document.getElementById('vol-label').style.color = vr>=1?C.green:C.red;
+
+  // 기술 트렌드
+  const tt = r.technicalTrend||'중립';
+  const ttCol = tt==='강세'?C.green:tt==='약세'?C.red:C.yellow;
+  const ttTag = document.getElementById('tech-trend-tag');
+  ttTag.textContent = tt;
+  ttTag.style.background = ttCol+'22';
+  ttTag.style.color = ttCol;
+  ttTag.style.borderColor = ttCol+'44';
+  document.getElementById('tech-summary-text').textContent = r.technicalSummary||'';
+
+  // Sentiment
+  drawGauge(r.sentimentScore||50);
+  const tw = r.twitterSentiment||{positive:50,neutral:30,negative:20,topTweets:[]};
+  document.getElementById('tw-pos-bar').style.width = tw.positive+'%';
+  document.getElementById('tw-neu-bar').style.width = tw.neutral+'%';
+  document.getElementById('tw-neg-bar').style.width = tw.negative+'%';
+  document.getElementById('tw-pos').textContent = tw.positive;
+  document.getElementById('tw-neu').textContent = tw.neutral;
+  document.getElementById('tw-neg').textContent = tw.negative;
+  const twDiv = document.getElementById('tw-tweets');
+  twDiv.innerHTML = (tw.topTweets||[]).map(t=>`<div class="sent-comment">💬 ${t}</div>`).join('');
+
+  const rd = r.redditSentiment||{positive:50,neutral:30,negative:20,topPosts:[]};
+  document.getElementById('rd-pos-bar').style.width = rd.positive+'%';
+  document.getElementById('rd-neu-bar').style.width = rd.neutral+'%';
+  document.getElementById('rd-neg-bar').style.width = rd.negative+'%';
+  document.getElementById('rd-pos').textContent = rd.positive;
+  document.getElementById('rd-neu').textContent = rd.neutral;
+  document.getElementById('rd-neg').textContent = rd.negative;
+  const rdDiv = document.getElementById('rd-posts');
+  rdDiv.innerHTML = (rd.topPosts||[]).map(p=>`<div class="sent-comment">📌 ${p}</div>`).join('');
+
+  // 예측
+  const ip = r.impactPrediction||{};
+  const stCol = trendColor(ip.shortTerm);
+  const mtCol = trendColor(ip.midTerm);
+  setImpactBox('short-term-box','short-pct','short-trend',ip.shortTermPct,ip.shortTerm,stCol);
+  setImpactBox('mid-term-box','mid-pct','mid-trend',ip.midTermPct,ip.midTerm,mtCol);
+  const conf = ip.confidence||0;
+  document.getElementById('conf-val').textContent = conf+'%';
+  document.getElementById('conf-bar').style.width = conf+'%';
+  document.getElementById('reasoning-text').textContent = ip.reasoning||'';
+
+  // 블로그
+  const blogDiv = document.getElementById('blog-content');
+  blogDiv.innerHTML = (r.blogPost||'').split('\n\n').map(p=>{
+    const isH = p.startsWith('#');
+    const txt = p.replace(/^#+\s/,'');
+    return `<p class="blog-para${isH?' heading':''}">${txt}</p>`;
+  }).join('');
+
+  // X 포스팅
+  const xBody = r.xPost||'';
+  document.getElementById('x-body').textContent = xBody;
+  document.getElementById('x-count').textContent = xBody.length+' / 280자';
+
+  // 표시
+  document.getElementById('idle-msg').style.display = 'none';
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('error-msg').style.display = 'none';
+  document.getElementById('report-container').style.display = 'block';
+  document.getElementById('report-container').className = 'fu';
+}
+
+function trendColor(t) {
+  return t&&t.includes('상승')?C.green:t&&t.includes('하락')?C.red:C.yellow;
+}
+function setImpactBox(boxId,pctId,trendId,pct,trend,col) {
+  const box = document.getElementById(boxId);
+  box.style.background = col+'11';
+  box.style.border = '1px solid '+col+'33';
+  document.getElementById(pctId).textContent = pct||'';
+  document.getElementById(pctId).style.color = col;
+  document.getElementById(trendId).textContent = trend||'';
+  document.getElementById(trendId).style.color = col;
+}
+
+// ── 탭 전환 ──
+function switchTab(name, btn) {
+  currentTab = name;
+  ['report','blog','x'].forEach(t=>{
+    document.getElementById('tab-'+t).style.display = t===name?'block':'none';
+  });
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ── 복사 ──
+function copyText(type) {
+  if (!currentReport) return;
+  const text = type==='blog' ? currentReport.blogPost : currentReport.xPost;
+  navigator.clipboard.writeText(text||'').then(()=>{
+    const btn = document.getElementById('copy-'+type+'-btn');
+    const orig = btn.textContent;
+    btn.textContent = '✓ 복사됨';
+    btn.style.color = C.green;
+    btn.style.borderColor = C.green+'44';
+    btn.style.background = C.green+'22';
+    setTimeout(()=>{ btn.textContent=orig; btn.style.color=''; btn.style.borderColor=''; btn.style.background=''; },2000);
+  });
+}
+
+// ── API 호출 (멀티턴 + 재시도 포함) ──
+async function callClaude(system, user, retries=2) {
+  // 1차 요청
+  const res = await fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      model:"claude-sonnet-4-20250514",
+      max_tokens:4000,
+      tools:[{type:"web_search_20250305",name:"web_search"}],
+      system,
+      messages:[{role:"user",content:user}]
+    })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+
+  // stop_reason이 tool_use면 멀티턴: 도구 결과를 포함해 추가 요청
+  let finalContent = data.content || [];
+  if (data.stop_reason === "tool_use") {
+    const toolUseBlocks = finalContent.filter(b=>b.type==="tool_use");
+    const toolResults = toolUseBlocks.map(b=>({
+      type:"tool_result", tool_use_id:b.id,
+      content: b.input ? JSON.stringify(b.input) : "search completed"
+    }));
+    const res2 = await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        model:"claude-sonnet-4-20250514",
+        max_tokens:4000,
+        tools:[{type:"web_search_20250305",name:"web_search"}],
+        system,
+        messages:[
+          {role:"user", content:user},
+          {role:"assistant", content:finalContent},
+          {role:"user", content:toolResults}
+        ]
+      })
+    });
+    const data2 = await res2.json();
+    if (data2.error) throw new Error(data2.error.message);
+    finalContent = data2.content || [];
+  }
+
+  // 모든 text 블록 합치기
+  const allText = finalContent.filter(b=>b.type==="text").map(b=>b.text).join("\n");
+
+  // JSON 추출: 첫 { ~ 마지막 }
+  const start = allText.indexOf("{"), end = allText.lastIndexOf("}");
+  if (start===-1||end===-1||end<=start) {
+    if (retries>0) {
+      console.warn("JSON 없음, 재시도...", allText.slice(0,100));
+      return callClaude(system, user, retries-1);
+    }
+    throw new Error("응답에서 JSON을 찾을 수 없습니다. 응답: "+allText.slice(0,300));
+  }
+  try {
+    return JSON.parse(allText.slice(start, end+1));
+  } catch(e) {
+    if (retries>0) return callClaude(system, user, retries-1);
+    throw new Error("JSON 파싱 실패: "+allText.slice(start, start+300));
+  }
+}
+
+// ── 입력 판별: URL이면 바로 분석, 아니면 뉴스 검색 ──
+function handleInput() {
+  const val = document.getElementById('url-input').value.trim();
+  if (!val) return;
+  const isUrl = /^https?:\/\//i.test(val);
+  if (isUrl) {
+    analyze(val);
+  } else {
+    searchNews(val);
+  }
+}
+
+// ── 뉴스 검색: 키워드로 관련 기사 목록 반환 ──
+async function searchNews(query) {
   const btn = document.getElementById('analyze-btn');
   btn.disabled = true;
   document.getElementById('idle-msg').style.display = 'none';
+  document.getElementById('search-results').style.display = 'none';
   document.getElementById('report-container').style.display = 'none';
   document.getElementById('error-msg').style.display = 'none';
   document.getElementById('loading').style.display = 'block';
-  
-  const isUrl = userInput.startsWith('http');
-  setLoadingMsg(isUrl ? "📰 뉴스 기사 분석 중..." : `🔍 "${userInput}" 관련 최신 뉴스 검색 중...`, 1);
+  setLoadingMsg(`🔎 "${query}" 관련 뉴스 검색 중...`, 1);
 
-  // 이 부분은 실제 API 연동이 필요하며, 아래는 동작 논리 구조입니다.
   try {
-    // 1. 뉴스 데이터 수집 (URL 직접 분석 또는 키워드 검색 기반 분석)
-    // 2. 종목 식별 및 주가 데이터 수집
-    // 3. AI 리포트 생성
-    // (현재는 데모 데이터를 보여주거나 실제 구현 시 Claude/Gemini API 호출 로직이 들어갑니다)
-    
-    setTimeout(() => {
-        setLoadingMsg("📊 주가 지표 및 차트 생성 중...", 3);
-        setTimeout(() => {
-            loadDemo(); // 실제 API가 없으므로 데모로 전환
-        }, 1000);
-    }, 1500);
+    const result = await callClaude(
+      `You are a financial news search assistant.
+Search for recent news articles related to the given query.
+Return ONLY valid JSON. No markdown. No backticks.
 
+Return exactly this structure:
+{
+  "query": "interpreted search query in English",
+  "articles": [
+    {
+      "title": "Article title in Korean (translated if needed)",
+      "titleEn": "Original English title",
+      "source": "Source name (e.g. Reuters, Bloomberg, CNBC)",
+      "publishedAt": "date string (e.g. 2026-03-17)",
+      "url": "article URL if found, else empty string",
+      "summary": "1-2 sentence Korean summary",
+      "ticker": "related stock ticker if identifiable, else empty"
+    }
+  ]
+}
+Return 3 to 6 articles. Sort by relevance and recency.`,
+      `Search for recent financial news about: "${query}"
+Search multiple times if needed to find 3-6 relevant articles.
+Focus on US stock market related news.`
+    );
+
+    renderSearchResults(query, result);
+  } catch(e) {
+    document.getElementById('loading').style.display = 'none';
+    const errEl = document.getElementById('error-msg');
+    errEl.innerHTML = `⚠️ 검색 실패: ${e.message}`;
+    errEl.style.display = 'block';
+    document.getElementById('idle-msg').style.display = 'block';
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ── 검색 결과 카드 렌더링 ──
+function renderSearchResults(query, data) {
+  document.getElementById('loading').style.display = 'none';
+  const articles = data.articles || [];
+  if (articles.length === 0) {
+    document.getElementById('error-msg').innerHTML = '⚠️ 관련 기사를 찾지 못했습니다. 다른 키워드로 검색해보세요.';
+    document.getElementById('error-msg').style.display = 'block';
+    document.getElementById('idle-msg').style.display = 'block';
+    return;
+  }
+
+  document.getElementById('search-query-label').textContent =
+    `"${query}" 검색 결과 ${articles.length}건 — 분석할 기사를 선택하세요`;
+
+  const list = document.getElementById('search-result-list');
+  list.innerHTML = '';
+
+  articles.forEach((art, i) => {
+    const card = document.createElement('div');
+    card.className = 'news-card';
+
+    const urlDisplay = art.url
+      ? `<a class="news-card-url" href="${art.url}" target="_blank" rel="noreferrer" onclick="event.stopPropagation()">🔗 ${art.url.slice(0,60)}${art.url.length>60?'...':''}</a>`
+      : `<span class="news-card-url" style="color:#2a3f5f">URL 없음 (키워드 검색으로 분석)</span>`;
+
+    const tickerBadge = art.ticker
+      ? `<span style="color:#ffd166;font-size:10px;background:rgba(255,209,102,.1);padding:2px 7px;border-radius:3px;font-weight:700">$${art.ticker}</span>`
+      : '';
+
+    card.innerHTML = `
+      <div class="news-card-num">${i+1}</div>
+      <div class="news-card-body">
+        <div class="news-card-title">${art.title}</div>
+        <div class="news-card-meta">
+          <span class="news-card-source">${art.source}</span>
+          <span class="news-card-date">${art.publishedAt}</span>
+          ${tickerBadge}
+        </div>
+        <div style="color:#6a88aa;font-size:11px;line-height:1.6;margin-bottom:5px">${art.summary}</div>
+        ${urlDisplay}
+      </div>
+      <div class="news-card-right">
+        <button class="news-card-analyze-btn" onclick="analyzeFromCard(${i})">📊 분석</button>
+      </div>`;
+
+    list.appendChild(card);
+  });
+
+  // 검색 결과 저장 (카드 클릭 시 사용)
+  window._searchArticles = articles;
+
+  document.getElementById('search-results').style.display = 'block';
+  document.getElementById('idle-msg').style.display = 'none';
+}
+
+// ── 검색결과 카드에서 분석 실행 ──
+function analyzeFromCard(index) {
+  const art = window._searchArticles[index];
+  if (!art) return;
+  // URL 있으면 URL로, 없으면 제목+티커로 분석
+  const input = art.url || art.titleEn || art.title;
+  document.getElementById('url-input').value = input;
+  // 검색결과 숨기고 분석 시작
+  document.getElementById('search-results').style.display = 'none';
+  analyze(input, art);
+}
+
+function closeSearch() {
+  document.getElementById('search-results').style.display = 'none';
+  document.getElementById('idle-msg').style.display = 'block';
+}
+
+// ── 분석 실행 (URL 또는 기사 메타 정보로) ──
+async function analyze(inputVal, articleMeta) {
+  const url = inputVal || document.getElementById('url-input').value.trim();
+  if (!url) return;
+  const btn = document.getElementById('analyze-btn');
+  btn.disabled = true;
+  document.getElementById('idle-msg').style.display = 'none';
+  document.getElementById('search-results').style.display = 'none';
+  document.getElementById('report-container').style.display = 'none';
+  document.getElementById('error-msg').style.display = 'none';
+  document.getElementById('loading').style.display = 'block';
+  setLoadingMsg("📰 뉴스 기사 분석 중...", 1);
+
+  // 입력 유형 판별
+  const isUrl = /^https?:\/\//i.test(url);
+  const isPaywall = isUrl && /investing\.com|wsj\.com|ft\.com|bloomberg\.com|barrons\.com|seekingalpha\.com|reuters\.com/.test(url);
+  const urlKeywords = isUrl
+    ? url.split('/').pop().replace(/[-_]/g,' ').replace(/\d{4,}/g,'').trim()
+    : url;
+
+  // articleMeta가 있으면 그 정보를 힌트로 활용
+  const metaHint = articleMeta
+    ? `\nKnown article info:\n- Title: ${articleMeta.titleEn||articleMeta.title}\n- Source: ${articleMeta.source}\n- Date: ${articleMeta.publishedAt}\n- Ticker: ${articleMeta.ticker||'unknown'}`
+    : '';
+
+  const newsUserPrompt = isUrl
+    ? `Article URL: "${url}"
+URL keyword hint: "${urlKeywords}"${metaHint}
+
+ACCESS STRATEGY:
+1. Try to fetch the URL directly
+2. If blocked/paywalled: search web_search for "${urlKeywords} ${new Date().getFullYear()}"
+3. Find and analyze the most relevant article
+4. Mark title with "(유사 기사 기반)" if using a different article`
+    : `Article keyword/title: "${url}"${metaHint}
+
+STRATEGY:
+1. Search web_search for: "${url}" financial news
+2. Find the most relevant recent article
+3. Analyze it fully`;
+
+  try {
+    const news = await callClaude(
+      `You are a senior financial news analyst specializing in US stock markets.
+Analyze the given article and return structured JSON data.
+
+CRITICAL RULES:
+1. Return ONLY valid JSON. No markdown, no backticks, no text before or after.
+2. Response MUST start with { and end with }
+3. If URL inaccessible: use web_search to find same/similar article. NEVER give up.
+4. blogPost: 800+ chars, natural Korean narrative (서술형), human-like, no bullet points.
+5. xPost: under 280 chars with hashtags.
+
+JSON schema:
+{
+  "ticker": "ticker symbol",
+  "companyName": "full company name",
+  "articleTitle": "한국어 제목",
+  "articleSummary": "한국어 2-3문장 핵심 요약",
+  "publishedAt": "발행일시",
+  "source": "소스명",
+  "articleUrl": "actual article URL found (or original URL)",
+  "unsplashQuery": "2-3 English image keywords",
+  "sentimentScore": 75,
+  "twitterSentiment": {"positive":70,"neutral":20,"negative":10,"topTweets":["tweet1","tweet2"]},
+  "redditSentiment": {"positive":65,"neutral":25,"negative":10,"topPosts":["post1","post2"]},
+  "impactPrediction": {
+    "shortTerm":"상승","shortTermPct":"+5~12%",
+    "midTerm":"지속 상승","midTermPct":"+15~30%",
+    "confidence":72,
+    "reasoning":"한국어 근거 최소 3문장"
+  },
+  "blogPost": "서술형 800자 이상 한국어 블로그",
+  "xPost": "한국어 X포스팅 280자 이내"
+}`,
+      newsUserPrompt
+    );
+
+    // articleUrl: API가 찾은 실제 URL 우선, 없으면 원본 입력
+    const resolvedUrl = news.articleUrl || (isUrl ? url : '');
+
+    setLoadingMsg(`📊 ${news.ticker} 3개월 주가 · 기술 지표 수집 중...`, 3);
+
+    const stockUserPrompt = `Search for 3-month daily stock data for ${news.ticker} (today March 17, 2026, range Dec 17 2025 ~ Mar 17 2026).
+Searches:
+1. "${news.ticker} stock price history December 2025 March 2026"
+2. "${news.ticker} Bollinger Bands Williams %R technical analysis"`;
+
+    const stock = await callClaude(
+      `You are a professional stock technical analyst for US markets.
+Today is March 17, 2026. Period: Dec 17, 2025 ~ Mar 17, 2026 (~63 trading days).
+
+CRITICAL: Return ONLY valid JSON. No markdown. No backticks. { to }.
+ALL arrays must be SAME length (~63 entries).
+
+{
+  "price":38.15,"priceChange":5.17,"priceChangePct":15.67,
+  "prevClose":32.98,"openPrice":39.42,
+  "afterHours":38.40,"afterHoursChange":0.25,"afterHoursChangePct":0.65,
+  "dailyData":{
+    "dates":["12/17","12/18",...,"3/14","3/17"],
+    "closes":[28.5,29.1,...,38.15],
+    "opens": [28.0,28.7,...,39.42],
+    "highs": [29.2,29.8,...,39.56],
+    "lows":  [27.8,28.3,...,37.85]
+  },
+  "bollingerData":{
+    "dates":["12/17",...,"3/17"],
+    "prices":[28.5,...,38.15],
+    "upper": [32.1,...,42.1],
+    "mid":   [28.8,...,34.5],
+    "lower": [25.5,...,26.9]
+  },
+  "williamsData":{
+    "dates":["12/17",...,"3/17"],
+    "values":[-55,...,-8]
+  },
+  "volumeData":{
+    "dates":["12/17",...,"3/17"],
+    "volumes":[22.5,...,58.2],
+    "avgVolume":28.5
+  },
+  "bollingerUpper":42.1,"bollingerMid":34.5,"bollingerLower":26.9,
+  "williamsR":-8,"volume":58200000,"avgVolume":28500000,"volumeRatio":2.04,
+  "technicalTrend":"강세",
+  "technicalSummary":"3개월 일봉 기준 3문장 한국어 기술 분석"
+}`,
+      stockUserPrompt
+    );
+
+    renderReport({...news, articleUrl: resolvedUrl, ...stock});
   } catch(e) {
     document.getElementById('loading').style.display = 'none';
     const errEl = document.getElementById('error-msg');
     errEl.innerHTML = `⚠️ 분석 실패: ${e.message}`;
     errEl.style.display = 'block';
+    document.getElementById('idle-msg').style.display = 'block';
   } finally {
     btn.disabled = false;
   }
@@ -317,96 +1314,31 @@ async function analyze() {
 
 function setLoadingMsg(msg, stepNum) {
   document.getElementById('loading-msg').textContent = msg;
-  for (let i=1; i<=4; i++) {
-    const item = document.getElementById('step'+i);
-    const dot = item.querySelector('.step-dot');
-    if (i < stepNum) { dot.style.background = C.green; item.style.color = C.green; }
-    else if (i === stepNum) { dot.style.background = C.accent; item.style.color = C.accent; }
-    else { dot.style.background = '#1a2d45'; item.style.color = C.muted; }
+  if (stepNum) {
+    for (let i=1;i<=4;i++) {
+      const dot = document.querySelector('#step'+i+' .step-dot');
+      const txt = document.querySelector('#step'+i);
+      if (i < stepNum) {
+        dot.style.background = '#00e5a0';
+        txt.style.color = '#00e5a0';
+      } else if (i === stepNum) {
+        dot.style.background = '#00c8ff';
+        dot.style.boxShadow = '0 0 6px #00c8ff';
+        txt.style.color = '#00c8ff';
+      } else {
+        dot.style.background = '#1a2d45';
+        txt.style.color = '#4a6080';
+      }
+    }
   }
 }
 
-function renderReport(r) {
-  document.getElementById('t-symbol').textContent = '$' + r.ticker;
-  document.getElementById('t-company').textContent = r.companyName;
-  document.getElementById('t-price').textContent = '$' + r.price;
-  document.getElementById('t-change').textContent = r.priceChangePct + '%';
-  document.getElementById('t-change').style.color = r.priceChangePct > 0 ? C.green : C.red;
-  document.getElementById('article-title').textContent = r.articleTitle;
-  document.getElementById('article-body').textContent = r.articleSummary;
-  document.getElementById('img-main-src').src = `https://source.unsplash.com/800x400/?${r.unsplashQuery}`;
-  document.getElementById('tech-summary-text').textContent = r.technicalSummary;
-  document.getElementById('short-pct').textContent = r.impactPrediction.shortTermPct;
-  document.getElementById('mid-pct').textContent = r.impactPrediction.midTermPct;
-  document.getElementById('reasoning-text').textContent = r.impactPrediction.reasoning;
-  
-  // Blog / X
-  document.getElementById('blog-content').innerHTML = r.blogPost.replace(/\n/g, '<br>');
-  document.getElementById('x-body').textContent = r.xPost;
-
-  document.getElementById('loading').style.display = 'none';
-  document.getElementById('report-container').style.display = 'block';
-  document.getElementById('report-container').className = 'fu';
-  
-  drawGauge(r.sentimentScore);
-  drawMiniChart();
-}
-
-// UI 헬퍼 함수들
-function switchTab(name, btn) {
-  ['report','blog','x'].forEach(t => document.getElementById('tab-'+t).style.display = (t===name?'block':'none'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-}
-
-function drawGauge(score) {
-  const svg = document.getElementById('gauge-svg');
-  svg.innerHTML = '';
-  const p = score/100;
-  const col = score > 60 ? C.green : score > 40 ? C.yellow : C.red;
-  const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-  path1.setAttribute("d", "M 10 60 A 50 50 0 0 1 110 60");
-  path1.setAttribute("fill", "none"); path1.setAttribute("stroke", C.border); path1.setAttribute("stroke-width", "10");
-  svg.appendChild(path1);
-  const path2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-  const x = 60 - 50 * Math.cos(p * Math.PI); const y = 60 - 50 * Math.sin(p * Math.PI);
-  path2.setAttribute("d", `M 10 60 A 50 50 0 0 1 ${x} ${y}`);
-  path2.setAttribute("fill", "none"); path2.setAttribute("stroke", col); path2.setAttribute("stroke-width", "10");
-  svg.appendChild(path2);
-  const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-  text.setAttribute("x", "60"); text.setAttribute("y", "55"); text.setAttribute("text-anchor", "middle"); text.setAttribute("fill", "#fff");
-  text.textContent = score; svg.appendChild(text);
-}
-
-function drawMiniChart() {
-    const svg = document.getElementById('daily-svg');
-    svg.innerHTML = '';
-    let points = "";
-    for(let i=0; i<20; i++) {
-        const x = (i * 35);
-        const y = 100 + Math.sin(i * 0.5) * 40 + Math.random() * 20;
-        points += `${x},${y} `;
-    }
-    const poly = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
-    poly.setAttribute("points", points); poly.setAttribute("fill", "none");
-    poly.setAttribute("stroke", C.accent); poly.setAttribute("stroke-width", "2");
-    svg.appendChild(poly);
-}
-
 function loadDemo() {
-  const DEMO = {
-    ticker:"IONQ", companyName:"IonQ Inc.", price:38.15, priceChangePct:15.67,
-    articleTitle:"IonQ, KISTI와 양자-HPC 통합 MOU 체결",
-    articleSummary:"NVIDIA NVQLink를 활용하여 한국의 슈퍼컴퓨팅 인프라와 양자 컴퓨터를 결합하는 전략적 협력입니다.",
-    unsplashQuery:"quantum computing", technicalSummary:"상승 모멘텀이 강하며 거래량이 폭증하고 있습니다.",
-    sentimentScore:85, impactPrediction: { shortTermPct:"+10~15%", midTermPct:"+25%", reasoning:"정부 예산이 투입되는 실질적 수주 파이프라인 확보로 해석됩니다." },
-    blogPost:"IonQ와 한국 KISTI의 협력은 단순한 기술 제휴 이상의 의미를 가집니다...",
-    xPost:"$IONQ KISTI 협력 발표! 양자컴퓨팅 시대가 다가옵니다. #IONQ #양자컴퓨터"
-  };
   renderReport(DEMO);
 }
 
-document.getElementById('url-input').addEventListener('keydown', e => { if(e.key==='Enter') analyze(); });
+// 엔터키
+document.getElementById('url-input').addEventListener('keydown', e=>{ if(e.key==='Enter') handleInput(); });
 </script>
 </body>
 </html>
