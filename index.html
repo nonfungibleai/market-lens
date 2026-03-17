@@ -258,42 +258,43 @@ svg{overflow:visible}
       <div class="card">
         <div class="sec-head"><span class="icon">📊</span><span class="title">기술적 분석 차트</span></div>
 
-        <!-- 일중 차트 -->
-        <div class="chart-label">
-          <div class="chart-label-text">📈 당일 주가 흐름 — 전일종가 <span style="color:#ffd166;font-family:'IBM Plex Mono',monospace" id="prev-close-label">$32.98</span> 기준</div>
+        <!-- 3개월 일봉 주가 차트 -->
+        <div class="chart-label" style="flex-wrap:wrap;gap:6px">
+          <div class="chart-label-text">📈 3개월 일봉 주가 — 전일종가 <span style="color:#ffd166;font-family:'IBM Plex Mono',monospace" id="prev-close-label">$32.98</span> 기준선</div>
+          <div id="daily-range-label" style="color:#4a6080;font-size:10px"></div>
         </div>
-        <svg id="intraday-svg" viewBox="0 0 560 150" style="width:100%;height:auto"></svg>
+        <svg id="daily-svg" viewBox="0 0 700 200" style="width:100%;height:auto"></svg>
 
         <div class="divider"></div>
 
-        <!-- 볼린저 -->
+        <!-- 볼린저밴드 (3개월) -->
         <div class="bb-legend">
-          <div class="chart-label-text">🎯 볼린저밴드 (10,2)</div>
+          <div class="chart-label-text">🎯 볼린저밴드 (20,2) — 3개월</div>
           <div class="bb-vals">
             <span style="color:#ff4060">상단 <span id="bb-upper">$35.4</span></span>
             <span style="color:#ffd166">중심 <span id="bb-mid">$32.3</span></span>
             <span style="color:#00e5a0">하단 <span id="bb-lower">$29.2</span></span>
           </div>
         </div>
-        <svg id="bollinger-svg" viewBox="0 0 560 160" style="width:100%;height:auto"></svg>
+        <svg id="bollinger-svg" viewBox="0 0 700 180" style="width:100%;height:auto"></svg>
 
         <div class="divider"></div>
 
-        <!-- Williams -->
+        <!-- Williams %R (3개월) -->
         <div class="chart-label">
-          <div class="chart-label-text">📉 Williams %R (10,2)</div>
+          <div class="chart-label-text">📉 Williams %R (14) — 3개월</div>
           <div id="wr-label" style="font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:13px">-18 — ⚠️ 과매수</div>
         </div>
-        <svg id="williams-svg" viewBox="0 0 560 100" style="width:100%;height:auto"></svg>
+        <svg id="williams-svg" viewBox="0 0 700 110" style="width:100%;height:auto"></svg>
 
         <div class="divider"></div>
 
-        <!-- 거래량 -->
+        <!-- 거래량 (3개월) -->
         <div class="chart-label">
-          <div class="chart-label-text">📦 거래량 (10일)</div>
+          <div class="chart-label-text">📦 거래량 — 3개월</div>
           <div id="vol-label" style="font-weight:700;font-size:12px;color:#00e5a0">평균 대비 +57%</div>
         </div>
-        <svg id="volume-svg" viewBox="0 0 560 100" style="width:100%;height:auto"></svg>
+        <svg id="volume-svg" viewBox="0 0 700 110" style="width:100%;height:auto"></svg>
 
         <!-- 기술 요약 -->
         <div class="tech-summary-box">
@@ -429,21 +430,53 @@ const DEMO = {
   publishedAt:"2026-03-16 09:00 ET", source:"Investing.com",
   prevClose:32.98, openPrice:39.42, price:38.15, priceChange:5.17, priceChangePct:15.67,
   afterHours:38.40, afterHoursChange:0.25, afterHoursChangePct:0.65,
-  intraday:[32.98,39.42,39.10,38.55,38.20,37.85,37.50,37.80,38.05,38.30,38.55,38.70,38.50,38.35,38.20,38.10,38.05,38.15],
+  // 3개월 일봉 데이터 (2025-12-17 ~ 2026-03-17, 약 63 거래일)
+  dailyData:{
+    dates:["12/17","12/18","12/19","12/20","12/23","12/24","12/26","12/27","12/30","12/31",
+           "1/2","1/3","1/6","1/7","1/8","1/9","1/10","1/13","1/14","1/15",
+           "1/16","1/17","1/21","1/22","1/23","1/24","1/27","1/28","1/29","1/30",
+           "1/31","2/3","2/4","2/5","2/6","2/7","2/10","2/11","2/12","2/13",
+           "2/14","2/18","2/19","2/20","2/21","2/24","2/25","2/26","2/27","2/28",
+           "3/3","3/4","3/5","3/6","3/7","3/10","3/11","3/12","3/13","3/14","3/17"],
+    closes:[24.8,25.4,23.9,22.5,21.8,22.1,23.4,24.0,23.1,22.6,
+            24.5,25.8,27.2,28.1,29.4,30.2,28.8,29.5,31.0,32.5,
+            33.8,35.2,36.1,34.8,33.5,34.2,35.6,37.1,38.5,39.2,
+            37.8,36.5,35.2,34.1,33.5,35.0,36.2,37.5,38.1,36.8,
+            35.5,34.2,33.1,32.5,31.8,33.2,34.5,35.8,34.2,33.1,
+            32.5,31.2,30.8,31.9,33.1,32.2,31.5,30.8,32.1,32.98,38.15],
+    opens: [24.2,25.0,25.2,23.7,22.0,21.9,22.0,23.5,23.8,23.0,
+            22.8,24.6,25.9,27.3,28.2,29.5,30.1,28.9,29.6,31.1,
+            32.6,33.9,35.3,36.0,34.7,33.6,34.3,35.7,37.2,38.6,
+            39.1,37.7,36.4,35.1,34.0,33.6,35.1,36.3,37.6,38.0,
+            36.7,35.4,34.1,33.0,32.4,31.9,33.3,34.6,35.7,34.1,
+            33.0,32.4,31.1,30.9,32.0,33.0,32.1,31.4,30.9,32.2,39.42],
+    highs: [25.6,26.2,25.5,24.1,22.8,22.5,23.8,24.5,24.2,23.5,
+            25.2,26.5,27.9,28.8,30.1,30.9,30.5,30.2,31.8,33.2,
+            34.5,36.0,37.2,36.5,34.9,35.0,36.3,37.8,39.2,40.1,
+            39.5,38.2,36.9,35.7,34.8,35.6,36.9,38.2,38.8,38.5,
+            37.1,35.8,34.6,33.5,32.8,33.9,35.1,36.5,36.0,34.5,
+            33.5,32.8,31.7,32.5,33.8,33.5,32.8,31.8,32.8,33.5,39.56],
+    lows:  [24.0,24.8,23.6,22.2,21.5,21.7,21.8,23.2,23.0,22.4,
+            22.5,24.3,25.6,27.0,28.0,29.2,28.5,28.7,29.3,30.8,
+            32.3,33.6,34.9,34.5,33.2,33.4,34.0,35.4,37.0,38.3,
+            37.5,36.2,35.0,34.0,33.3,33.3,35.0,36.0,37.3,36.5,
+            35.2,33.9,32.8,32.3,31.5,31.7,33.0,34.3,34.0,32.8,
+            32.2,31.0,30.6,30.7,31.8,31.8,31.2,30.5,31.7,32.7,37.85]
+  },
   bollingerData:{
-    dates:["3/6","3/7","3/8","3/9","3/10","3/11","3/12","3/13","3/14","3/17"],
-    prices:[34.5,33.8,32.1,31.5,30.2,30.8,31.9,33.1,32.98,38.15],
-    upper:[41.2,40.8,39.5,38.9,37.8,37.4,37.7,38.2,38.0,42.1],
-    mid:  [34.8,34.2,33.5,32.8,31.9,31.5,32.0,32.8,32.6,34.5],
-    lower:[28.4,27.6,27.5,26.7,26.0,25.6,26.3,27.4,27.2,26.9]
+    dates:["12/17","12/24","12/31","1/7","1/14","1/21","1/28","2/4","2/11","2/18","2/25","3/4","3/11","3/17"],
+    prices:[24.8,22.1,22.6,28.1,32.5,36.1,39.2,35.2,37.5,34.2,33.1,31.2,30.8,38.15],
+    upper: [31.5,30.2,29.8,33.5,37.8,41.2,44.5,42.1,43.8,41.5,39.8,37.5,36.2,42.1],
+    mid:   [26.5,25.8,25.2,28.8,31.5,34.2,36.8,35.5,36.2,34.8,33.5,32.1,31.5,34.5],
+    lower: [21.5,21.4,20.6,24.1,25.2,27.2,29.1,28.9,28.6,28.1,27.2,26.7,26.8,26.9]
   },
   williamsData:{
-    dates:["3/6","3/7","3/8","3/9","3/10","3/11","3/12","3/13","3/14","3/17"],
-    values:[-38,-52,-65,-72,-85,-68,-55,-32,-45,-8]
+    dates:["12/17","12/24","12/31","1/7","1/14","1/21","1/28","2/4","2/11","2/18","2/25","3/4","3/11","3/17"],
+    values:[-42,-28,-65,-35,-22,-18,-15,-45,-25,-55,-68,-72,-58,-8]
   },
   volumeData:{
-    dates:["3/6","3/7","3/8","3/9","3/10","3/11","3/12","3/13","3/14","3/17"],
-    volumes:[22.1,19.8,25.3,28.7,31.2,24.5,27.6,33.5,28.8,58.2],
+    dates:["12/17","12/24","12/31","1/7","1/14","1/21","1/28","2/4","2/11","2/18","2/25","3/4","3/11","3/17"],
+    volumes:[22.1,18.5,25.3,31.2,28.7,45.8,38.2,24.8,33.5,29.2,22.5,19.8,28.8,58.2],
     avgVolume:28.8
   },
   bollingerUpper:42.1, bollingerMid:34.5, bollingerLower:26.9,
@@ -521,159 +554,218 @@ function svgEl(tag, attrs, text) {
 }
 function clearSvg(id) { const s=document.getElementById(id); while(s.firstChild)s.removeChild(s.firstChild); return s; }
 
-// ── 차트: 당일 ──
-function drawIntraday(data, prevClose) {
-  const svg = clearSvg('intraday-svg');
-  if (!data||data.length<2) return;
-  const W=560,H=150,PL=50,PR=10,PT=10,PB=28;
-  const cw=W-PL-PR, ch=H-PT-PB;
-  const all=[...data,prevClose];
-  const mn=Math.min(...all)*0.997, mx=Math.max(...all)*1.003;
-  const sx=i=>PL+(i/(data.length-1))*cw;
-  const sy=v=>PT+ch-((v-mn)/(mx-mn))*ch;
-  const isUp=data[data.length-1]>=prevClose;
-  const col=isUp?C.green:C.red;
-  const gradId='ig'+Date.now();
+// ── 공통: X축 레이블 간격 계산 (n개 데이터 중 최대 tick개) ──
+function xTicks(n, maxTick) {
+  const step = Math.ceil(n / maxTick);
+  const ticks = [];
+  for (let i=0; i<n; i+=step) ticks.push(i);
+  if (ticks[ticks.length-1] !== n-1) ticks.push(n-1);
+  return ticks;
+}
 
+// ── 차트: 3개월 일봉 주가 (캔들스틱 스타일 바) ──
+function drawDailyPrice(d, prevClose) {
+  const svg = clearSvg('daily-svg');
+  if (!d||!d.dates||d.dates.length<2) return;
+  const {dates, closes, opens, highs, lows} = d;
+  const n = dates.length;
+  const W=700, H=200, PL=54, PR=14, PT=14, PB=30;
+  const cw=W-PL-PR, ch=H-PT-PB;
+
+  // 범위 레이블 업데이트
+  const rangeEl = document.getElementById('daily-range-label');
+  if (rangeEl && dates.length>0) rangeEl.textContent = dates[0]+' ~ '+dates[n-1];
+
+  const allV=[...closes,...(highs||closes),...(lows||closes),prevClose].filter(v=>v>0);
+  const mn=Math.min(...allV)*0.985, mx=Math.max(...allV)*1.015;
+  const sx=i=>PL+((i+0.5)/n)*cw;
+  const sy=v=>PT+ch-((v-mn)/(mx-mn))*ch;
+  const bw=Math.max(2, Math.min(8, (cw/n)*0.6));
+
+  // 그라데이션
+  const gradId='dp'+Date.now();
   const defs=svgEl('defs');
   const grad=svgEl('linearGradient',{id:gradId,x1:"0",y1:"0",x2:"0",y2:"1"});
-  const s1=svgEl('stop',{offset:"0%","stop-color":col,"stop-opacity":"0.35"});
-  const s2=svgEl('stop',{offset:"100%","stop-color":col,"stop-opacity":"0"});
-  grad.appendChild(s1); grad.appendChild(s2); defs.appendChild(grad); svg.appendChild(defs);
+  grad.appendChild(svgEl('stop',{offset:"0%","stop-color":C.accent,"stop-opacity":"0.06"}));
+  grad.appendChild(svgEl('stop',{offset:"100%","stop-color":C.accent,"stop-opacity":"0"}));
+  defs.appendChild(grad); svg.appendChild(defs);
 
-  // 그리드
-  [mn,(mn+mx)/2,mx].forEach(v=>{
-    svg.appendChild(svgEl('line',{x1:PL,y1:sy(v),x2:W-PR,y2:sy(v),stroke:C.border,"stroke-width":"1","stroke-dasharray":"3,3"}));
-    svg.appendChild(svgEl('text',{x:PL-4,y:sy(v)+4,"text-anchor":"end",fill:C.muted,"font-size":"9"},"$"+v.toFixed(2)));
-  });
-  // 전일 종가선
-  svg.appendChild(svgEl('line',{x1:PL,y1:sy(prevClose),x2:W-PR,y2:sy(prevClose),stroke:C.yellow,"stroke-width":"1.5","stroke-dasharray":"5,4"}));
-  svg.appendChild(svgEl('text',{x:W-PR+2,y:sy(prevClose)+4,fill:C.yellow,"font-size":"8"},"전일종가"));
+  // Y축 그리드 5개
+  const ySteps=5;
+  for(let i=0;i<=ySteps;i++){
+    const v=mn+(mx-mn)*(i/ySteps);
+    svg.appendChild(svgEl('line',{x1:PL,y1:sy(v),x2:W-PR,y2:sy(v),stroke:C.border,"stroke-width":"1","stroke-dasharray":"3,4"}));
+    svg.appendChild(svgEl('text',{x:PL-4,y:sy(v)+4,"text-anchor":"end",fill:C.muted,"font-size":"9"},"$"+v.toFixed(1)));
+  }
 
-  // 영역
-  const areaD = `M${sx(0)},${sy(data[0])} `+data.map((v,i)=>`L${sx(i)},${sy(v)}`).join(" ")+` L${sx(data.length-1)},${H-PB} L${sx(0)},${H-PB} Z`;
+  // 전일종가 기준선
+  if(prevClose>=mn && prevClose<=mx){
+    svg.appendChild(svgEl('line',{x1:PL,y1:sy(prevClose),x2:W-PR,y2:sy(prevClose),stroke:C.yellow,"stroke-width":"1.5","stroke-dasharray":"6,4"}));
+    svg.appendChild(svgEl('text',{x:W-PR+2,y:sy(prevClose)+4,fill:C.yellow,"font-size":"9","font-weight":"600"},"전일종가 $"+prevClose.toFixed(2)));
+  }
+
+  // 종가선 영역 채우기 (area chart)
+  const areaD=`M${sx(0)},${sy(closes[0])} `+closes.map((v,i)=>`L${sx(i)},${sy(v)}`).join(" ")+` L${sx(n-1)},${H-PB} L${sx(0)},${H-PB} Z`;
   svg.appendChild(svgEl('path',{d:areaD,fill:`url(#${gradId})`}));
 
-  // 선
-  const pts=data.map((v,i)=>`${sx(i)},${sy(v)}`).join(" ");
-  svg.appendChild(svgEl('polyline',{points:pts,fill:"none",stroke:col,"stroke-width":"2"}));
+  // 캔들 바: open/close 있으면 캔들, 없으면 단순 바
+  closes.forEach((close,i)=>{
+    const open=opens?opens[i]:close;
+    const high=highs?highs[i]:close;
+    const low=lows?lows[i]:close;
+    const isUp=close>=open;
+    const col=isUp?C.green:C.red;
+    // 고저 선
+    svg.appendChild(svgEl('line',{x1:sx(i),y1:sy(high),x2:sx(i),y2:sy(low),stroke:col+"99","stroke-width":"1"}));
+    // 몸통
+    const y1=sy(Math.max(open,close)), y2=sy(Math.min(open,close));
+    const barH=Math.max(1.5,y2-y1);
+    svg.appendChild(svgEl('rect',{x:sx(i)-bw/2,y:y1,width:bw,height:barH,fill:col,rx:"1"}));
+  });
 
-  // 끝 점
-  const n=data.length-1;
-  svg.appendChild(svgEl('circle',{cx:sx(n),cy:sy(data[n]),r:"4",fill:col,stroke:C.bg,"stroke-width":"1.5"}));
+  // 종가 연결선 (얇게)
+  svg.appendChild(svgEl('polyline',{
+    points:closes.map((v,i)=>`${sx(i)},${sy(v)}`).join(" "),
+    fill:"none",stroke:C.accent+"66","stroke-width":"1"
+  }));
 
-  // X 축 레이블
-  const xl=["장전","10AM","11AM","12PM","1PM","2PM","3PM","4PM","시간외"];
-  xl.forEach((l,i)=>{
-    const xi=Math.round((i/(xl.length-1))*(data.length-1));
-    svg.appendChild(svgEl('text',{x:sx(xi),y:H-6,"text-anchor":"middle",fill:C.muted,"font-size":"8"},l));
+  // 마지막 점
+  const lastClose=closes[n-1];
+  const dotCol=lastClose>=prevClose?C.green:C.red;
+  svg.appendChild(svgEl('circle',{cx:sx(n-1),cy:sy(lastClose),r:"5",fill:dotCol,stroke:C.bg,"stroke-width":"1.5"}));
+  svg.appendChild(svgEl('text',{x:sx(n-1)+8,y:sy(lastClose)+4,fill:dotCol,"font-size":"10","font-weight":"700"},"$"+lastClose.toFixed(2)));
+
+  // X축 날짜 레이블 (최대 10개)
+  xTicks(n,10).forEach(i=>{
+    svg.appendChild(svgEl('text',{x:sx(i),y:H-8,"text-anchor":"middle",fill:C.muted,"font-size":"8"},dates[i]));
   });
 }
 
-// ── 차트: 볼린저 ──
+// ── 차트: 볼린저밴드 (3개월 일봉) ──
 function drawBollinger(d) {
   const svg = clearSvg('bollinger-svg');
-  if (!d) return;
+  if (!d||!d.dates) return;
   const {dates,prices,upper,mid,lower}=d;
-  const W=560,H=160,PL=50,PR=10,PT=10,PB=26;
+  const W=700,H=180,PL=54,PR=14,PT=14,PB=28;
   const cw=W-PL-PR,ch=H-PT-PB;
   const all=[...prices,...upper,...lower];
-  const mn=Math.min(...all)*0.99,mx=Math.max(...all)*1.01;
+  const mn=Math.min(...all)*0.988,mx=Math.max(...all)*1.012;
   const n=prices.length;
-  const sx=i=>PL+(i/(n-1))*cw;
+  const sx=i=>PL+((i+0.5)/n)*cw;
   const sy=v=>PT+ch-((v-mn)/(mx-mn))*ch;
   const gradId='bg'+Date.now();
 
   const defs=svgEl('defs');
   const grad=svgEl('linearGradient',{id:gradId,x1:"0",y1:"0",x2:"0",y2:"1"});
-  grad.appendChild(svgEl('stop',{offset:"0%","stop-color":C.accent,"stop-opacity":"0.1"}));
+  grad.appendChild(svgEl('stop',{offset:"0%","stop-color":C.accent,"stop-opacity":"0.12"}));
   grad.appendChild(svgEl('stop',{offset:"100%","stop-color":C.accent,"stop-opacity":"0.02"}));
   defs.appendChild(grad); svg.appendChild(defs);
 
-  // 그리드
-  [mn,(mn+mx)/2,mx].forEach(v=>{
+  // Y 그리드
+  for(let i=0;i<=4;i++){
+    const v=mn+(mx-mn)*(i/4);
     svg.appendChild(svgEl('line',{x1:PL,y1:sy(v),x2:W-PR,y2:sy(v),stroke:C.border,"stroke-width":"1"}));
-    svg.appendChild(svgEl('text',{x:PL-4,y:sy(v)+4,"text-anchor":"end",fill:C.muted,"font-size":"9"},"$"+v.toFixed(0)));
-  });
+    svg.appendChild(svgEl('text',{x:PL-4,y:sy(v)+4,"text-anchor":"end",fill:C.muted,"font-size":"9"},"$"+v.toFixed(1)));
+  }
 
   // 밴드 영역
-  const band=upper.map((v,i)=>`${sx(i)},${sy(v)}`).join(" ")+" "+[...lower].reverse().map((v,i)=>`${sx(n-1-i)},${sy(v)}`).join(" ");
-  svg.appendChild(svgEl('polygon',{points:band,fill:`url(#${gradId})`}));
+  const bandU=upper.map((v,i)=>`${sx(i)},${sy(v)}`).join(" ");
+  const bandL=[...lower].reverse().map((v,i)=>`${sx(n-1-i)},${sy(v)}`).join(" ");
+  svg.appendChild(svgEl('polygon',{points:bandU+" "+bandL,fill:`url(#${gradId})`}));
 
-  // 선들
-  [[upper,C.red],[mid,C.yellow],[lower,C.green]].forEach(([arr,col])=>{
-    svg.appendChild(svgEl('polyline',{points:arr.map((v,i)=>`${sx(i)},${sy(v)}`).join(" "),fill:"none",stroke:col,"stroke-width":"1.5","stroke-dasharray":"4,3"}));
+  // 상단/중심/하단 선
+  [[upper,C.red,"4,3"],[mid,C.yellow,"4,3"],[lower,C.green,"4,3"]].forEach(([arr,col,dash])=>{
+    svg.appendChild(svgEl('polyline',{points:arr.map((v,i)=>`${sx(i)},${sy(v)}`).join(" "),fill:"none",stroke:col,"stroke-width":"1.5","stroke-dasharray":dash}));
   });
-  svg.appendChild(svgEl('polyline',{points:prices.map((v,i)=>`${sx(i)},${sy(v)}`).join(" "),fill:"none",stroke:C.white,"stroke-width":"1.5"}));
+  // 주가선
+  svg.appendChild(svgEl('polyline',{points:prices.map((v,i)=>`${sx(i)},${sy(v)}`).join(" "),fill:"none",stroke:C.white,"stroke-width":"1.8"}));
 
-  prices.forEach((v,i)=>{
-    svg.appendChild(svgEl('circle',{cx:sx(i),cy:sy(v),r:i===n-1?"4":"2.5",fill:i===n-1?C.accent:C.white,stroke:C.bg,"stroke-width":"1"}));
+  // 마지막 점
+  svg.appendChild(svgEl('circle',{cx:sx(n-1),cy:sy(prices[n-1]),r:"4",fill:C.accent,stroke:C.bg,"stroke-width":"1.5"}));
+
+  // X축 날짜 (최대 10개)
+  xTicks(n,10).forEach(i=>{
+    svg.appendChild(svgEl('text',{x:sx(i),y:H-8,"text-anchor":"middle",fill:C.muted,"font-size":"8"},dates[i]));
   });
-  dates.forEach((d,i)=>{
-    svg.appendChild(svgEl('text',{x:sx(i),y:H-6,"text-anchor":"middle",fill:C.muted,"font-size":"8"},d));
-  });
+
   // 레전드
-  [[PL+6,C.red,"── 상단"],[PL+60,C.yellow,"── 중심"],[PL+114,C.green,"── 하단"],[PL+166,C.white,"── 주가"]].forEach(([x,col,lbl])=>{
-    svg.appendChild(svgEl('text',{x,y:PT+14,fill:col,"font-size":"9"},lbl));
+  [[PL+6,C.red,"── 상단"],[PL+56,C.yellow,"── 중심"],[PL+106,C.green,"── 하단"],[PL+156,C.white,"── 주가"]].forEach(([x,col,lbl])=>{
+    svg.appendChild(svgEl('text',{x,y:PT+12,fill:col,"font-size":"9"},lbl));
   });
 }
 
-// ── 차트: Williams %R ──
+// ── 차트: Williams %R (3개월 일봉) ──
 function drawWilliams(d) {
   const svg = clearSvg('williams-svg');
-  if (!d) return;
+  if (!d||!d.dates) return;
   const {dates,values}=d;
-  const W=560,H=100,PL=42,PR=10,PT=12,PB=22;
+  const W=700,H=110,PL=42,PR=14,PT=12,PB=24;
   const cw=W-PL-PR,ch=H-PT-PB;
   const mn=-100,mx=0,n=values.length;
-  const sx=i=>PL+(i/(n-1))*cw;
+  const sx=i=>PL+((i+0.5)/n)*cw;
   const sy=v=>PT+ch-((v-mn)/(mx-mn))*ch;
   const wrCol=v=>v>-20?C.red:v<-80?C.green:C.purple;
 
-  svg.appendChild(svgEl('rect',{x:PL,y:PT,width:cw,height:sy(-20)-PT,fill:"rgba(255,64,96,.08)"}));
-  svg.appendChild(svgEl('rect',{x:PL,y:sy(-80),width:cw,height:H-PB-sy(-80),fill:"rgba(0,229,160,.08)"}));
+  // 과매수/과매도 존
+  svg.appendChild(svgEl('rect',{x:PL,y:PT,width:cw,height:Math.max(0,sy(-20)-PT),fill:"rgba(255,64,96,.07)"}));
+  const y80=sy(-80), yBot=H-PB;
+  if(yBot>y80) svg.appendChild(svgEl('rect',{x:PL,y:y80,width:cw,height:yBot-y80,fill:"rgba(0,229,160,.07)"}));
 
   [-20,-50,-80].forEach(v=>{
-    const col=v===-20?"rgba(255,64,96,.6)":v===-80?"rgba(0,229,160,.6)":C.border;
+    const col=v===-20?"rgba(255,64,96,.7)":v===-80?"rgba(0,229,160,.7)":C.border;
     svg.appendChild(svgEl('line',{x1:PL,y1:sy(v),x2:W-PR,y2:sy(v),stroke:col,"stroke-width":"1","stroke-dasharray":"3,3"}));
     svg.appendChild(svgEl('text',{x:PL-4,y:sy(v)+4,"text-anchor":"end",fill:C.muted,"font-size":"8"},v));
   });
 
-  svg.appendChild(svgEl('polyline',{points:values.map((v,i)=>`${sx(i)},${sy(v)}`).join(" "),fill:"none",stroke:C.purple,"stroke-width":"2"}));
-  values.forEach((v,i)=>{
-    svg.appendChild(svgEl('circle',{cx:sx(i),cy:sy(v),r:i===n-1?"4":"2.5",fill:i===n-1?wrCol(v):C.purple,stroke:C.bg,"stroke-width":"1"}));
+  // 영역 채우기
+  const areaD=`M${sx(0)},${sy(values[0])} `+values.map((v,i)=>`L${sx(i)},${sy(v)}`).join(" ")+` L${sx(n-1)},${H-PB} L${sx(0)},${H-PB} Z`;
+  svg.appendChild(svgEl('path',{d:areaD,fill:C.purple+"18"}));
+
+  svg.appendChild(svgEl('polyline',{points:values.map((v,i)=>`${sx(i)},${sy(v)}`).join(" "),fill:"none",stroke:C.purple,"stroke-width":"1.8"}));
+
+  // 마지막 점
+  const lv=values[n-1];
+  svg.appendChild(svgEl('circle',{cx:sx(n-1),cy:sy(lv),r:"4",fill:wrCol(lv),stroke:C.bg,"stroke-width":"1.5"}));
+
+  // X축 (최대 10개)
+  xTicks(n,10).forEach(i=>{
+    svg.appendChild(svgEl('text',{x:sx(i),y:H-6,"text-anchor":"middle",fill:C.muted,"font-size":"8"},dates[i]));
   });
-  dates.forEach((d,i)=>{
-    svg.appendChild(svgEl('text',{x:sx(i),y:H-4,"text-anchor":"middle",fill:C.muted,"font-size":"8"},d));
-  });
-  svg.appendChild(svgEl('text',{x:W-PR-2,y:PT+10,"text-anchor":"end",fill:C.red,"font-size":"8"},"과매수 -20"));
-  svg.appendChild(svgEl('text',{x:W-PR-2,y:sy(-80)-3,"text-anchor":"end",fill:C.green,"font-size":"8"},"과매도 -80"));
+  svg.appendChild(svgEl('text',{x:W-PR-2,y:PT+10,"text-anchor":"end",fill:C.red,"font-size":"8"},"과매수(-20)"));
+  svg.appendChild(svgEl('text',{x:W-PR-2,y:sy(-80)-3,"text-anchor":"end",fill:C.green,"font-size":"8"},"과매도(-80)"));
 }
 
-// ── 차트: 거래량 ──
+// ── 차트: 거래량 (3개월 일봉) ──
 function drawVolume(d) {
   const svg = clearSvg('volume-svg');
-  if (!d) return;
+  if (!d||!d.dates) return;
   const {dates,volumes,avgVolume}=d;
-  const W=560,H=100,PL=42,PR=10,PT=10,PB=22;
+  const W=700,H=110,PL=48,PR=14,PT=10,PB=24;
   const cw=W-PL-PR,ch=H-PT-PB;
-  const mx=Math.max(...volumes,avgVolume)*1.15,n=volumes.length;
-  const bw=(cw/n)*0.55;
+  const mx=Math.max(...volumes,avgVolume)*1.18,n=volumes.length;
+  const bw=Math.max(1.5,Math.min(7,(cw/n)*0.55));
   const sx=i=>PL+((i+0.5)/n)*cw;
   const sy=v=>PT+ch-(v/mx)*ch;
 
-  svg.appendChild(svgEl('line',{x1:PL,y1:sy(avgVolume),x2:W-PR,y2:sy(avgVolume),stroke:C.yellow,"stroke-width":"1.5","stroke-dasharray":"5,3"}));
-  svg.appendChild(svgEl('text',{x:W-PR-2,y:sy(avgVolume)-3,"text-anchor":"end",fill:C.yellow,"font-size":"8"},"평균 "+avgVolume+"M"));
+  // 평균선
+  svg.appendChild(svgEl('line',{x1:PL,y1:sy(avgVolume),x2:W-PR,y2:sy(avgVolume),stroke:C.yellow,"stroke-width":"1.5","stroke-dasharray":"6,3"}));
+  svg.appendChild(svgEl('text',{x:W-PR-2,y:sy(avgVolume)-4,"text-anchor":"end",fill:C.yellow,"font-size":"8"},"평균 "+avgVolume.toFixed(1)+"M"));
+
+  // Y축
   [0,mx/2,mx].forEach(v=>{
     svg.appendChild(svgEl('text',{x:PL-4,y:sy(v)+4,"text-anchor":"end",fill:C.muted,"font-size":"8"},v.toFixed(0)+"M"));
   });
+
+  // 바
   volumes.forEach((v,i)=>{
-    const isLast=i===n-1,above=v>avgVolume;
-    const col=isLast?C.accent:above?"rgba(0,229,160,.6)":"rgba(74,96,128,.5)";
-    svg.appendChild(svgEl('rect',{x:sx(i)-bw/2,y:sy(v),width:bw,height:ch-(sy(v)-PT),fill:col,rx:"2"}));
+    const isLast=i===n-1, above=v>avgVolume;
+    const col=isLast?C.accent:above?"rgba(0,229,160,.65)":"rgba(74,96,128,.5)";
+    svg.appendChild(svgEl('rect',{x:sx(i)-bw/2,y:sy(v),width:bw,height:ch-(sy(v)-PT),fill:col,rx:"1.5"}));
   });
-  dates.forEach((d,i)=>{
-    svg.appendChild(svgEl('text',{x:sx(i),y:H-4,"text-anchor":"middle",fill:C.muted,"font-size":"8"},d));
+
+  // X축 (최대 10개)
+  xTicks(n,10).forEach(i=>{
+    svg.appendChild(svgEl('text',{x:sx(i),y:H-6,"text-anchor":"middle",fill:C.muted,"font-size":"8"},dates[i]));
   });
 }
 
@@ -721,7 +813,7 @@ function renderReport(r) {
 
   // 차트
   document.getElementById('prev-close-label').textContent = '$'+(r.prevClose||0).toFixed(2);
-  drawIntraday(r.intraday, r.prevClose||(r.price-r.priceChange));
+  drawDailyPrice(r.dailyData, r.prevClose||(r.price-(r.priceChange||0)));
   drawBollinger(r.bollingerData);
   drawWilliams(r.williamsData);
   drawVolume(r.volumeData);
@@ -922,14 +1014,21 @@ async function analyze() {
   document.getElementById('loading').style.display = 'block';
   setLoadingMsg("📰 뉴스 기사 분석 중...", 1);
 
-  // investing.com, paywall 사이트 차단 감지 → 검색 fallback 힌트 포함
-  const isPaywall = /investing\.com|wsj\.com|ft\.com|bloomberg\.com|barrons\.com/.test(url);
-  const newsUserPrompt = isPaywall
-    ? `The URL "${url}" may be behind a paywall. 
-       First try to search for the article content using the article title or key terms from the URL. 
-       The URL suggests: "${url.split('/').pop().replace(/-/g,' ')}". 
-       Search for this topic, find the relevant news, analyze it thoroughly, and return the JSON.`
-    : `Analyze this news article URL: ${url}. If the page is inaccessible, search for the article title or key terms to find the content.`;
+  // 페이월/차단 감지 및 URL 키워드 추출
+  const isPaywall = /investing\.com|wsj\.com|ft\.com|bloomberg\.com|barrons\.com|seekingalpha\.com|reuters\.com/.test(url);
+  const urlKeywords = url.split('/').pop().replace(/[-_]/g,' ').replace(/\d{4,}/g,'').trim();
+  const newsUserPrompt = `Article URL: "${url}"
+URL keyword hint: "${urlKeywords}"
+
+IMPORTANT ACCESS STRATEGY:
+1. First attempt: try to fetch/access the URL directly
+2. If blocked/paywalled/403/login-required: DO NOT give up. Instead:
+   a. Extract key topics from the URL slug: "${urlKeywords}"
+   b. Search web_search for: "${urlKeywords} news 2026"
+   c. Search for: "${urlKeywords} stock analysis"
+   d. Find the most relevant similar article and analyze it
+3. Always return complete JSON regardless of access method
+4. In articleTitle/articleSummary, note if using similar article: "(유사 기사 기반 분석)"`;
 
   try {
     const news = await callClaude(
@@ -970,60 +1069,66 @@ Return this exact JSON structure:
       newsUserPrompt
     );
 
-    setLoadingMsg(`📊 ${news.ticker} 주가 · 기술적 지표 수집 중...`, 3);
+    setLoadingMsg(`📊 ${news.ticker} 3개월 주가 · 기술 지표 수집 중...`, 3);
 
-    const stockUserPrompt = `Search for current stock data for ${news.ticker} (today is March 17, 2026).
-Search queries to use:
-1. "${news.ticker} stock price today March 2026"
-2. "${news.ticker} technical analysis Bollinger Bands Williams %R"
-3. "${news.ticker} trading volume recent"
+    const stockUserPrompt = `Search for 3-month daily OHLCV stock data for ${news.ticker} (today is March 17, 2026, so the 3-month range is approximately Dec 17, 2025 ~ Mar 17, 2026).
+Search:
+1. "${news.ticker} stock price history 3 months 2026"
+2. "${news.ticker} daily OHLC December 2025 to March 2026"
+3. "${news.ticker} Bollinger Bands Williams %R technical analysis 2026"
 
-Use the REAL data you find. For intraday array, create 18 realistic price points from market open to close based on today's actual price range.
-For bollingerData/williamsData/volumeData, use the last 10 trading days with realistic values.`;
+Use REAL data found. Generate approximately 63 trading days of daily data for the 3-month period.`;
 
     const stock = await callClaude(
       `You are a professional stock technical analyst for US markets.
-Today is March 17, 2026. Search for real, current stock data.
+Today is March 17, 2026. The analysis period is 3 months: approximately Dec 17, 2025 to Mar 17, 2026 (about 63 trading days).
 
 CRITICAL: Return ONLY valid JSON. No markdown. No backticks. Start with { end with }.
-Use REAL searched data. For any value you cannot find, make a realistic estimate based on price context.
+All arrays must have the SAME length (about 63 entries for 3 months of trading days).
+Use realistic data based on what you find. The prevClose is the closing price of the day BEFORE the article's publication date.
 
-JSON structure:
+JSON structure (use ~63 entries for 3 months):
 {
-  "price": 33.29,
-  "priceChange": 0.31,
-  "priceChangePct": 0.94,
+  "price": 38.15,
+  "priceChange": 5.17,
+  "priceChangePct": 15.67,
   "prevClose": 32.98,
-  "openPrice": 33.60,
-  "afterHours": 33.40,
-  "afterHoursChange": 0.11,
-  "afterHoursChangePct": 0.33,
-  "intraday": [32.98, 33.45, 34.20, 33.90, 33.55, 33.10, 32.65, 32.80, 33.10, 33.40, 33.70, 33.95, 33.75, 33.55, 33.45, 33.35, 33.25, 33.29],
+  "openPrice": 39.42,
+  "afterHours": 38.40,
+  "afterHoursChange": 0.25,
+  "afterHoursChangePct": 0.65,
+  "dailyData": {
+    "dates": ["12/17","12/18","12/19",...,"3/14","3/17"],
+    "closes": [28.5, 29.1, 27.8, ...],
+    "opens":  [28.0, 28.7, 29.0, ...],
+    "highs":  [29.2, 29.8, 28.5, ...],
+    "lows":   [27.8, 28.3, 27.2, ...]
+  },
   "bollingerData": {
-    "dates": ["3/6","3/7","3/8","3/9","3/10","3/11","3/12","3/13","3/14","3/17"],
-    "prices": [31.2, 30.8, 31.5, 32.1, 31.8, 30.9, 31.7, 32.5, 32.98, 33.29],
-    "upper": [35.8, 35.6, 35.9, 36.1, 35.8, 35.4, 35.5, 35.7, 35.6, 35.9],
-    "mid":   [31.5, 31.3, 31.6, 31.9, 31.7, 31.2, 31.5, 32.0, 31.9, 32.1],
-    "lower": [27.2, 27.0, 27.3, 27.7, 27.6, 27.0, 27.5, 28.3, 28.2, 28.3]
+    "dates": ["12/17","12/18",...,"3/14","3/17"],
+    "prices": [28.5, 29.1, ...],
+    "upper":  [32.1, 32.5, ...],
+    "mid":    [28.8, 29.0, ...],
+    "lower":  [25.5, 25.5, ...]
   },
   "williamsData": {
-    "dates": ["3/6","3/7","3/8","3/9","3/10","3/11","3/12","3/13","3/14","3/17"],
-    "values": [-42, -55, -38, -25, -35, -62, -45, -22, -28, -18]
+    "dates": ["12/17","12/18",...,"3/14","3/17"],
+    "values": [-55, -48, -62, ..., -8]
   },
   "volumeData": {
-    "dates": ["3/6","3/7","3/8","3/9","3/10","3/11","3/12","3/13","3/14","3/17"],
-    "volumes": [22.1, 18.5, 25.3, 31.2, 28.7, 19.4, 24.8, 33.5, 28.2, 38.4],
-    "avgVolume": 28.8
+    "dates": ["12/17","12/18",...,"3/14","3/17"],
+    "volumes": [22.5, 18.3, 25.1, ...],
+    "avgVolume": 28.5
   },
-  "bollingerUpper": 35.9,
-  "bollingerMid": 32.1,
-  "bollingerLower": 28.3,
-  "williamsR": -18,
-  "volume": 38400000,
-  "avgVolume": 28800000,
-  "volumeRatio": 1.33,
+  "bollingerUpper": 42.1,
+  "bollingerMid": 34.5,
+  "bollingerLower": 26.9,
+  "williamsR": -8,
+  "volume": 58200000,
+  "avgVolume": 28500000,
+  "volumeRatio": 2.04,
   "technicalTrend": "강세",
-  "technicalSummary": "3 sentences in Korean about technical outlook"
+  "technicalSummary": "3개월 일봉 기준 상세 기술적 분석 3문장."
 }`,
       stockUserPrompt
     );
