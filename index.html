@@ -181,13 +181,46 @@ svg{overflow:visible}
   <div id="header-inner">
     <div class="logo-row">
       <div class="logo-icon">📡</div>
-      <div>
+      <div style="flex:1">
         <div class="logo-title">MARKET<span>LENS</span></div>
         <div class="logo-sub">AI-POWERED NEWS &amp; STOCK ANALYSIS · US MARKET</div>
       </div>
+      <!-- API 키 설정 토글 -->
+      <button id="api-key-toggle" onclick="toggleApiKeyPanel()"
+        style="background:none;border:1px solid #1a2d45;border-radius:6px;color:#4a6080;font-size:11px;padding:5px 10px;cursor:pointer;white-space:nowrap;font-family:inherit">
+        🔑 API 키
+      </button>
     </div>
+
+    <!-- API 키 입력 패널 -->
+    <div id="api-key-panel" style="display:none;margin-bottom:12px;background:#0a1525;border:1px solid #1a2d45;border-radius:8px;padding:12px">
+      <div style="color:#4a6080;font-size:11px;margin-bottom:8px">
+        🔑 Anthropic API 키를 입력하세요.
+        키는 브라우저에만 저장되며 외부로 전송되지 않습니다.
+        <a href="https://console.anthropic.com/" target="_blank" style="color:#00c8ff">발급받기 →</a>
+      </div>
+      <div style="display:flex;gap:8px">
+        <input id="api-key-input" type="password" placeholder="sk-ant-..."
+          style="flex:1;background:#121f33;border:1px solid #1a2d45;border-radius:6px;padding:7px 12px;color:#dde6f0;font-size:12px;outline:none;font-family:monospace"/>
+        <button onclick="saveApiKey()"
+          style="background:linear-gradient(135deg,#00c8ff,#0070cc);color:#000;border:none;border-radius:6px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">
+          저장
+        </button>
+        <button onclick="clearApiKey()"
+          style="background:none;border:1px solid #1a2d45;color:#4a6080;border-radius:6px;padding:7px 10px;font-size:12px;cursor:pointer;font-family:inherit">
+          삭제
+        </button>
+      </div>
+      <div id="api-key-status" style="margin-top:6px;font-size:11px;color:#4a6080"></div>
+    </div>
+
+    <!-- API 키 없을 때 경고 배너 -->
+    <div id="no-key-banner" style="display:none;background:rgba(255,209,102,.08);border:1px solid rgba(255,209,102,.25);border-radius:7px;padding:9px 14px;margin-bottom:10px;font-size:12px;color:#ffd166">
+      ⚠️ API 키가 설정되지 않았습니다. 우측 상단 <b>🔑 API 키</b> 버튼에서 Anthropic API 키를 입력하세요.
+    </div>
+
     <div class="search-row">
-      <input id="url-input" type="text" placeholder="뉴스 URL 또는 기사 제목·키워드 입력 (예: IonQ KISTI quantum)..."/>
+      <input id="url-input" type="text" placeholder="뉴스 URL 또는 기사 제목·키워드 입력 (예: IonQ KISTI quantum, 삼성전자 실적)..."/>
       <button id="analyze-btn" onclick="handleInput()">🔍 검색</button>
     </div>
   </div>
@@ -971,68 +1004,146 @@ function copyText(type) {
   });
 }
 
+// ── API 키 관리 ──
+function getApiKey() {
+  return sessionStorage.getItem('ml_api_key') || localStorage.getItem('ml_api_key') || '';
+}
+function saveApiKey() {
+  const key = document.getElementById('api-key-input').value.trim();
+  if (!key.startsWith('sk-ant-')) {
+    document.getElementById('api-key-status').innerHTML = '<span style="color:#ff4060">❌ 유효하지 않은 키 형식입니다 (sk-ant- 로 시작해야 함)</span>';
+    return;
+  }
+  localStorage.setItem('ml_api_key', key);
+  sessionStorage.setItem('ml_api_key', key);
+  document.getElementById('api-key-status').innerHTML = '<span style="color:#00e5a0">✅ API 키가 저장되었습니다</span>';
+  document.getElementById('api-key-toggle').style.borderColor = '#00e5a055';
+  document.getElementById('api-key-toggle').style.color = '#00e5a0';
+  document.getElementById('no-key-banner').style.display = 'none';
+  setTimeout(()=>{ document.getElementById('api-key-panel').style.display='none'; }, 1200);
+}
+function clearApiKey() {
+  localStorage.removeItem('ml_api_key');
+  sessionStorage.removeItem('ml_api_key');
+  document.getElementById('api-key-input').value = '';
+  document.getElementById('api-key-status').innerHTML = '<span style="color:#4a6080">키가 삭제되었습니다</span>';
+  document.getElementById('api-key-toggle').style.borderColor = '';
+  document.getElementById('api-key-toggle').style.color = '';
+  checkApiKey();
+}
+function toggleApiKeyPanel() {
+  const panel = document.getElementById('api-key-panel');
+  const isOpen = panel.style.display !== 'none';
+  panel.style.display = isOpen ? 'none' : 'block';
+  if (!isOpen) {
+    const saved = getApiKey();
+    if (saved) document.getElementById('api-key-input').value = saved;
+  }
+}
+function checkApiKey() {
+  const key = getApiKey();
+  const banner = document.getElementById('no-key-banner');
+  const toggle = document.getElementById('api-key-toggle');
+  if (!key) {
+    banner.style.display = 'block';
+    toggle.style.borderColor = 'rgba(255,209,102,.4)';
+    toggle.style.color = '#ffd166';
+  } else {
+    banner.style.display = 'none';
+    toggle.style.borderColor = '#00e5a055';
+    toggle.style.color = '#00e5a0';
+  }
+}
+
 // ── API 호출 (멀티턴 + 재시도 포함) ──
 async function callClaude(system, user, retries=2) {
-  // 1차 요청
-  const res = await fetch("https://api.anthropic.com/v1/messages",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-      model:"claude-sonnet-4-20250514",
-      max_tokens:4000,
-      tools:[{type:"web_search_20250305",name:"web_search"}],
-      system,
-      messages:[{role:"user",content:user}]
-    })
-  });
-  const data = await res.json();
-  if (data.error) throw new Error(data.error.message);
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    document.getElementById('api-key-panel').style.display = 'block';
+    throw new Error('API 키가 설정되지 않았습니다. 우측 상단 🔑 API 키 버튼에서 키를 입력하세요.');
+  }
 
-  // stop_reason이 tool_use면 멀티턴: 도구 결과를 포함해 추가 요청
-  let finalContent = data.content || [];
-  if (data.stop_reason === "tool_use") {
-    const toolUseBlocks = finalContent.filter(b=>b.type==="tool_use");
-    const toolResults = toolUseBlocks.map(b=>({
-      type:"tool_result", tool_use_id:b.id,
-      content: b.input ? JSON.stringify(b.input) : "search completed"
-    }));
-    const res2 = await fetch("https://api.anthropic.com/v1/messages",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        model:"claude-sonnet-4-20250514",
-        max_tokens:4000,
-        tools:[{type:"web_search_20250305",name:"web_search"}],
+  const headers = {
+    "Content-Type": "application/json",
+    "x-api-key": apiKey,
+    "anthropic-version": "2023-06-01",
+    "anthropic-dangerous-direct-browser-access": "true"
+  };
+
+  let res;
+  try {
+    res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 4000,
+        tools: [{type:"web_search_20250305", name:"web_search"}],
         system,
-        messages:[
-          {role:"user", content:user},
-          {role:"assistant", content:finalContent},
-          {role:"user", content:toolResults}
-        ]
+        messages: [{role:"user", content:user}]
       })
     });
+  } catch(e) {
+    throw new Error('네트워크 오류: ' + e.message + ' (CORS 또는 인터넷 연결 확인)');
+  }
+
+  const data = await res.json();
+  if (data.error) {
+    if (data.error.type === 'authentication_error') {
+      document.getElementById('api-key-panel').style.display = 'block';
+      document.getElementById('api-key-status').innerHTML = '<span style="color:#ff4060">❌ API 키가 올바르지 않습니다</span>';
+    }
+    throw new Error(data.error.message);
+  }
+
+  // stop_reason이 tool_use면 멀티턴 처리
+  let finalContent = data.content || [];
+  if (data.stop_reason === "tool_use") {
+    const toolUseBlocks = finalContent.filter(b => b.type === "tool_use");
+    const toolResults = toolUseBlocks.map(b => ({
+      type: "tool_result",
+      tool_use_id: b.id,
+      content: b.input ? JSON.stringify(b.input) : "search completed"
+    }));
+    let res2;
+    try {
+      res2 = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 4000,
+          tools: [{type:"web_search_20250305", name:"web_search"}],
+          system,
+          messages: [
+            {role:"user", content:user},
+            {role:"assistant", content:finalContent},
+            {role:"user", content:toolResults}
+          ]
+        })
+      });
+    } catch(e) {
+      throw new Error('네트워크 오류 (2차 요청): ' + e.message);
+    }
     const data2 = await res2.json();
     if (data2.error) throw new Error(data2.error.message);
     finalContent = data2.content || [];
   }
 
   // 모든 text 블록 합치기
-  const allText = finalContent.filter(b=>b.type==="text").map(b=>b.text).join("\n");
+  const allText = finalContent.filter(b => b.type === "text").map(b => b.text).join("\n");
 
-  // JSON 추출: 첫 { ~ 마지막 }
+  // JSON 추출
   const start = allText.indexOf("{"), end = allText.lastIndexOf("}");
-  if (start===-1||end===-1||end<=start) {
-    if (retries>0) {
-      console.warn("JSON 없음, 재시도...", allText.slice(0,100));
-      return callClaude(system, user, retries-1);
-    }
-    throw new Error("응답에서 JSON을 찾을 수 없습니다. 응답: "+allText.slice(0,300));
+  if (start === -1 || end === -1 || end <= start) {
+    if (retries > 0) return callClaude(system, user, retries - 1);
+    throw new Error("응답에서 JSON을 찾을 수 없습니다: " + allText.slice(0, 200));
   }
   try {
-    return JSON.parse(allText.slice(start, end+1));
+    return JSON.parse(allText.slice(start, end + 1));
   } catch(e) {
-    if (retries>0) return callClaude(system, user, retries-1);
-    throw new Error("JSON 파싱 실패: "+allText.slice(start, start+300));
+    if (retries > 0) return callClaude(system, user, retries - 1);
+    throw new Error("JSON 파싱 실패: " + allText.slice(start, start + 200));
   }
 }
 
@@ -1339,6 +1450,14 @@ function loadDemo() {
 
 // 엔터키
 document.getElementById('url-input').addEventListener('keydown', e=>{ if(e.key==='Enter') handleInput(); });
+
+// 페이지 로드 시 API 키 상태 확인
+window.addEventListener('DOMContentLoaded', ()=>{
+  checkApiKey();
+  // 저장된 키 있으면 input에 미리 표시
+  const saved = getApiKey();
+  if (saved) document.getElementById('api-key-input').value = saved;
+});
 </script>
 </body>
 </html>
